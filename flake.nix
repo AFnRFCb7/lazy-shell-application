@@ -6,7 +6,7 @@
                 lib =
                     let
                         implementation =
-                            { buildFHSUserEnv , coreutils , jq , nix , runtime-inputs , text , writeShellApplication } :
+                            { buildFHSUserEnv , coreutils , jq , nix , writeShellApplication } : { name , runtime-inputs , text } :
                                 let
                                     parameters =
                                         {
@@ -21,7 +21,7 @@
                                     in
                                         parameters.writeShellApplication
                                             {
-                                                name = "application" ;
+                                                name = name ;
                                                 runtimeInputs =
                                                     [
                                                         parameters.coreutils
@@ -55,7 +55,7 @@
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "application" ;
-                                                                                                                runtimeInputs = parameters.runtime-inputs ;
+                                                                                                                runtimeInputs = parameters.runtime-inputs pkgs ;
                                                                                                                 text = parameters.text ;
                                                                                                             }
                                                                                                     )
