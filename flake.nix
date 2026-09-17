@@ -151,7 +151,7 @@
                         in
                             {
                                 check =
-                                    { arguments , client , coreutils , nixosTest , nodes , order , standard-error , standard-input , standard-output , status , test-setup , writeShellApplication } :
+                                    { arguments , client , coreutils , findutils , nixosTest , nodes , order , standard-error , standard-input , standard-output , status , test-setup , writeShellApplication } :
                                         let
                                             parameters =
                                                 {
