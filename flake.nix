@@ -172,26 +172,24 @@
                                                     } ;
                                             test =
                                                 let
-                                                    test =
-                                                        if builtins.typeOf parameters.standard-input == "null" then
-                                                            ''
-                                                                STANDARD_OUTPUT="$( mktemp )" || exit
-                                                                if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } > "$STANDARD_OUTPUT" 2> "$STANDARD_ERROR"
-                                                                then
-                                                                else
-                                                                fi
-                                                            ''
-                                                        else
-                                                            ''
-                                                            '' ;
-                                                    in
-                                                        if builtins.typeOf parameters.standard-input == "null" then
-                                                            ''
-                                                                ${ client }.success("if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } > ")
-                                                            ''
-                                                        else
-                                                            ''
-                                                            '' ;
+                                                    test-script =
+                                                        ''
+                                                            mkdir --parents /tmp/expected
+                                                            ln --symbolic ${ builtins.toFile "standard-error" parameters.standard-error } /tmp/expected/standard-error
+                                                            ln --symbolic ${ builtins.toFile "standard-output" parameters.standard-output } /tmp/expected/standard-output
+                                                            ln --symbolic ${ builtins.toFile "status" parameters.status } /tmp/expected/status
+                                                            mkdir --parents /tmp/observed
+                                                            if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } ${ if builtins.typeOf parameters.standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                            then
+                                                                echo "$?" > /tmp/observed/status
+                                                            else
+                                                                echo "$?" > /tmp/observed/status
+                                                            fi
+                                                            if ! diff --unified /tmp/expected /tmp/observed then
+                                                                exit 143
+                                                            fi
+                                                        '' ;
+                                                    in ''${ client }.success("test-script")'' ;
                                             in
                                                 {
                                                     name = builtins.concatStringsSep "-" [ "order" ( builtins.toString order ) ] ;
