@@ -151,22 +151,47 @@
                         in
                             {
                                 check =
-                                    { nixosTest , nodes , order , standard-error , standard-output , status , tests } :
+                                    { arguments , client , nixosTest , nodes , order , standard-error , standard-input , standard-output , status , test-setup } :
                                         let
                                             parameters =
                                                 {
+                                                    arguments = arguments ;
+                                                    client = client ;
                                                     nixosTest = nixosTest ;
                                                     nodes = nodes ;
                                                     order = order ;
-                                                    tests = tests ;
+                                                    standard-input = standard-input ;
+                                                    test-setup = test-setup ;
                                                 } ;
                                             nixos-test =
                                                 parameters.nixosTest
                                                     {
                                                         name = "nixos-test" ;
                                                         nodes = parameters.nodes ;
-                                                        testScript = builtins.concatStringsSep "/n" ( parameters.tests implementation ) ;
+                                                        testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ parameters.test-setup ] ) ;
                                                     } ;
+                                            test =
+                                                let
+                                                    test =
+                                                        if builtins.typeOf parameters.standard-input == "null" then
+                                                            ''
+                                                                STANDARD_OUTPUT="$( mktemp )" || exit
+                                                                if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } > "$STANDARD_OUTPUT" 2> "$STANDARD_ERROR"
+                                                                then
+                                                                else
+                                                                fi
+                                                            ''
+                                                        else
+                                                            ''
+                                                            '' ;
+                                                    in
+                                                        if builtins.typeOf parameters.standard-input == "null" then
+                                                            ''
+                                                                ${ client }.success("if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } > ")
+                                                            ''
+                                                        else
+                                                            ''
+                                                            '' ;
                                             in
                                                 {
                                                     name = builtins.concatStringsSep "-" [ "order" ( builtins.toString order ) ] ;
