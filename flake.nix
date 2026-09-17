@@ -151,21 +151,28 @@
                         in
                             {
                                 check =
-                                    { nixosTest , nodes , tests } :
+                                    { nixosTest , nodes , order , standard-error , standard-output , status , tests } :
                                         let
                                             parameters =
                                                 {
                                                     nixosTest = nixosTest ;
                                                     nodes = nodes ;
+                                                    order = order ;
                                                     tests = tests ;
                                                 } ;
-                                            in
+                                            nixos-test =
                                                 parameters.nixosTest
                                                     {
                                                         name = "nixos-test" ;
                                                         nodes = parameters.nodes ;
                                                         testScript = builtins.concatStringsSep "/n" ( parameters.tests implementation ) ;
                                                     } ;
+                                            in
+                                                {
+                                                    name = builtins.concatStringsSep "-" [ "order" ( builtins.toString order ) ] ;
+                                                    order = order ;
+                                                    test = nixos-test ;
+                                                } ;
                                 implementation = implementation ;
                             } ;
             } ;
