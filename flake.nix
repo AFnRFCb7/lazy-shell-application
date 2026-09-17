@@ -4,10 +4,22 @@
         { self } :
             {
                 lib =
-                    { buildFHSUserEnv , coreutils , failure , jq , nix , writeShellApplication } :
+                    {
+                        buildFHSUserEnv ,
+                        coreutils ,
+                        failure ,
+                        jq ,
+                        nix ,
+                        visitor ,
+                        writeShellApplication
+                    } :
                         let
                             implementation =
-                                { name , runtime-inputs , text } :
+                                {
+                                    name ,
+                                    runtime-inputs ,
+                                    text
+                                } :
                                     let
                                         implementation-parameters =
                                             {
@@ -22,6 +34,7 @@
                                                     runtimeInputs =
                                                         [
                                                             root-parameters.coreutils
+                                                            root-parameters.failure
                                                             root-parameters.jq
                                                             root-parameters.nix
                                                             (
@@ -103,13 +116,13 @@
                                                                         shift 2
                                                                         ;;
                                                                     *)
-                                                                        exit 156
+                                                                        failure 4512848497123333
                                                                         ;;
                                                                 esac
                                                             done
-                                                            INPUT="$( mktemp --suffix ".json" )" || exit 182
+                                                            INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
-                                                            OUTPUT="$( mktemp --suffix ".json" )" || exit 121
+                                                            OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
                                                             export OUTPUT
                                                             cleanup ( ) {
                                                                 rm --force "$INPUT" "$OUTPUT"
@@ -118,7 +131,7 @@
                                                             trap cleanup EXIT
                                                             if [[ -t 0 ]]
                                                             then
-                                                                STANDARD_INPUT="$( cat )" || exit 121
+                                                                STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                 jq \
                                                                     --null-input \
                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
@@ -137,11 +150,11 @@
                                                                     }' -- "$@" > "$IbindfsNPUT"
                                                             fi
                                                             application
-                                                            STANDARD_ERROR="$( jq --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || exit 116
+                                                            STANDARD_ERROR="$( jq --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || failure 8856851932761746
                                                             echo -n "$STANDARD_ERROR" >&2
-                                                            STANDARD_OUTPUT="$( jq --arg DEFAULT_STANDARD_OUTPUT "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"] // $DEFAULT_STANDARD_OUTPUT' "$OUTPUT" )" || exit 121
+                                                            STANDARD_OUTPUT="$( jq --arg DEFAULT_STANDARD_OUTPUT "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"] // $DEFAULT_STANDARD_OUTPUT' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
-                                                            STATUS="$( jq --arg DEFAULT_STATUS "$DEFAULT_STATUS" --raw-output '.["status"] // $DEFAULT_STATUS' "$OUTPUT" )" || exit 118
+                                                            STATUS="$( jq --arg DEFAULT_STATUS "$DEFAULT_STATUS" --raw-output '.["status"] // $DEFAULT_STATUS' "$OUTPUT" )" || failure 9357282994784138
                                                             exit "$STATUS"
                                                         '' ;
                                                 } ;
@@ -152,6 +165,7 @@
                                     failure = failure ;
                                     jq = jq ;
                                     nix = nix ;
+                                    visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
                                 } ;
                             in
@@ -211,7 +225,7 @@
                                                                                 echo "$?" > /tmp/observed/status
                                                                             fi
                                                                             if ! diff --unified /tmp/expected /tmp/observed then
-                                                                                exit 143
+                                                                                failure 1145694589525674
                                                                             fi
                                                                         '' ;
                                                                 } ;
