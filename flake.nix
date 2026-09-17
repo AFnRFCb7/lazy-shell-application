@@ -150,7 +150,22 @@
                                             } ;
                         in
                             {
-                                check = null ;
+                                check =
+                                    { nixosTest , nodes , tests } :
+                                        let
+                                            parameters =
+                                                {
+                                                    nixosTest = nixosTest ;
+                                                    nodes = nodes ;
+                                                    tests = tests ;
+                                                } ;
+                                            in
+                                                parameters.nixosTest
+                                                    {
+                                                        name = "nixos-test" ;
+                                                        nodes = parameters.nodes ;
+                                                        testScript = builtins.concatStringsSep "/n" ( parameters.tests implementation ) ;
+                                                    } ;
                                 implementation = implementation ;
                             } ;
             } ;
