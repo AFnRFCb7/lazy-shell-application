@@ -52,6 +52,7 @@
                                                                                 "--tmpfs" "/scratch"
                                                                             ] ;
                                                                         name = "application" ;
+                                                                        runScript = "application" ;
                                                                         targetPkgs =
                                                                             pkgs :
                                                                                 [
