@@ -18,6 +18,7 @@
                                 {
                                     name ,
                                     runtime-inputs ,
+                                    teardown ,
                                     text
                                 } :
                                     let
@@ -25,6 +26,7 @@
                                             {
                                                 name = name ;
                                                 runtime-inputs = runtime-inputs ;
+                                                teardown = teardown ;
                                                 text = text ;
                                             } ;
                                         in
@@ -100,10 +102,15 @@
                                                                         name = "cleanup" ;
                                                                         runtimeInputs = [ coreutils nix ] ;
                                                                         text =
-                                                                            ''
-                                                                                rm --force "$INPUT" "$OUTPUT"
-                                                                                nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
-                                                                            '' ;
+                                                                            if implementation-parameters.teardown then
+                                                                                ''
+                                                                                    rm --force "$INPUT" "$OUTPUT"
+                                                                                    nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
+                                                                                ''
+                                                                            else
+                                                                                ''
+                                                                                    rm --force "$INPUT" "$OUTPUT"
+                                                                                '' ;
                                                                     }
                                                             )
                                                         ] ;
@@ -172,7 +179,7 @@
                                     coreutils = coreutils ;
                                     failure = failure 3885643131463398 ;
                                     jq = jq ;
-                                    nix = visitor { string = path : value : value ; } nix ;
+                                    nix = nix ;
                                     visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
                                 } ;
