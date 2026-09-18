@@ -162,7 +162,7 @@
                                 {
                                     buildFHSUserEnv = buildFHSUserEnv ;
                                     coreutils = coreutils ;
-                                    failure = failure ;
+                                    failure = failure 3885643131463398 ;
                                     jq = jq ;
                                     nix = nix ;
                                     visitor = visitor ;
@@ -226,7 +226,7 @@
                                                             writeShellApplication
                                                                 {
                                                                     name = "test-script" ;
-#                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( root-parameters.failure 3885643131463398 ) ] ;
+                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( root-parameters.failure ) ] ;
                                                                     text =
                                                                         ''
                                                                             mkdir --parents /tmp/expected
