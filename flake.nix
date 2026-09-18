@@ -121,26 +121,6 @@
                                                             DEFAULT_STANDARD_OUTPUT=""
                                                             DEFAULT_STATUS=0
                                                             if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
-                                                            while [[ "$#" -gt 0 ]]
-                                                            do
-                                                                case "$1" in
-                                                                    --default-standard-error)
-                                                                        DEFAULT_STANDARD_ERROR="$2"
-                                                                        shift 2
-                                                                        ;;
-                                                                    --default-standard-output)
-                                                                        DEFAULT_STANDARD_OUTPUT="$2"
-                                                                        shift 2
-                                                                        ;;
-                                                                    --default-status)
-                                                                        DEFAULT_STATUS="$2"
-                                                                        shift 2
-                                                                        ;;
-                                                                    *)
-                                                                        failure 4512848497123333
-                                                                        ;;
-                                                                esac
-                                                            done
                                                             INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
