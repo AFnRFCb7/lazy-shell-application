@@ -149,6 +149,9 @@
                                                             STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
                                                             # exit "$STATUS"
                                                             echo
+                                                            echo "STANDARD_ERROR=$STANDARD_ERROR"
+                                                            echo "STANDARD_OUTPUT=$STANDARD_OUTPUT"
+                                                            echo "STATUS=$STATUS"
                                                             cat "$OUTPUT"
                                                             exit 152
                                                         '' ;
