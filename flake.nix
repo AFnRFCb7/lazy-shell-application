@@ -226,7 +226,7 @@
                                                             writeShellApplication
                                                                 {
                                                                     name = "test-script" ;
-                                                                    runtimeInputs = [ coreutils findutils ] ;
+                                                                    runtimeInputs = [ root-parameters.coreutils root-parameters.findutils root-parameters.failure ] ;
                                                                     text =
                                                                         ''
                                                                             mkdir --parents /tmp/expected
@@ -245,7 +245,7 @@
                                                                             fi
                                                                         '' ;
                                                                 } ;
-                                                        in ''${ check-parameters.client }.succeed("test-script")'' ;
+                                                        in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
                                                 in
                                                     {
                                                         name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
