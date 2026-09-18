@@ -74,7 +74,7 @@
                                                                                                     ] ;
                                                                                                 text =
                                                                                                     ''
-                                                                                                        if application > /private/standard-input 2> /private/standard-error
+                                                                                                        if application > /private/standard-output 2> /private/standard-error
                                                                                                         then
                                                                                                             echo "$?" /private/status
                                                                                                         else
