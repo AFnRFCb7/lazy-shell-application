@@ -44,11 +44,9 @@
                                                                     {
                                                                         extraBwrapArgs =
                                                                             [
-                                                                                "--ro-bind" "$INPUT" "/data/input.json"
-                                                                                "--bind" "$OUTPUT" "/data/output.json"
-                                                                                "--tmpfs" "/private/standard-error"
-                                                                                "--tmpfs" "/private/standard-output"
-                                                                                "--tmpfs" "/private/status"
+                                                                                "--ro-bind" "$INPUT" "/input.json"
+                                                                                "--bind" "$OUTPUT" "/output.json"
+                                                                                "--tmpfs" "/private/standard"
                                                                                 "--tmpfs" "/scratch"
                                                                             ] ;
                                                                         name = "application" ;
@@ -76,11 +74,11 @@
                                                                                                 text =
                                                                                                     ''
                                                                                                         mapfile -t ARGUMENTS < <(
-                                                                                                            jq --raw-output '.arguments[]' /data/input.json
+                                                                                                            jq --raw-output '.arguments[]' /input.json
                                                                                                         )
-                                                                                                        if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /data/input.json > /dev/null
+                                                                                                        if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /dev/null
                                                                                                         then
-                                                                                                            STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /data/input.json )" || failure 7828132754944749
+                                                                                                            STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
                                                                                                             if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
                                                                                                             then
                                                                                                                 STATUS="$?"
@@ -104,7 +102,7 @@
                                                                                                                 "standard-error" : $STANDARD_ERROR ,
                                                                                                                 "standard-output" : $STANDARD_OUTPUT ,
                                                                                                                 "status" : $STATUS
-                                                                                                            }' > /data/output.json
+                                                                                                            }' > /output.json
                                                                                                     '' ;
                                                                                             }
                                                                                     )
