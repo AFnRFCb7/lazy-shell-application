@@ -209,7 +209,7 @@
                                                         standard-input = visitor { null = path : value : value ; string = path : value : builtins.toFile "standard-input" value ; } standard-input ;
                                                         standard-output = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-output ;
                                                         status = visitor { int = path : value : builtins.toString value ; } status ;
-                                                        test-setup = test-setup ;
+                                                        test-setup = visitor { string = path : value : value ; } test-setup ;
                                                         text = text ;
                                                         writeShellApplication = writeShellApplication ;
                                                     } ;
@@ -218,10 +218,11 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = check-parameters.nodes ;
-                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup ] ) ;
+                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ]] ) ;
                                                         } ;
                                                 test =
                                                     let
+##                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                         test-script =
                                                             writeShellApplication
                                                                 {
@@ -234,7 +235,7 @@
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
                                                                             echo ${ check-parameters.status } /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
-                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            if true
                                                                             then
                                                                                 echo "$?" > /tmp/observed/status
                                                                             else
