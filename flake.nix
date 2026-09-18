@@ -233,7 +233,7 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = check-parameters.nodes ;
-                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ] ] ) ;
+                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ ( builtins.trace test test ) ] ] ) ;
                                                         } ;
                                                 test =
                                                     let
