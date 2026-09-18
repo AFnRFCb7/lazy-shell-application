@@ -89,7 +89,7 @@
                                                                                                                 "standard-error" : $STANDARD_ERROR ,
                                                                                                                 "standard-output" : $STANDARD_OUTPUT ,
                                                                                                                 "status" : $STATUS
-                                                                                                            }' > "$OUTPUT"
+                                                                                                            }' > /output
                                                                                                     '' ;
                                                                                             }
                                                                                     )
