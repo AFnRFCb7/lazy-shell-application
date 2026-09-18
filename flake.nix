@@ -145,11 +145,11 @@
                                                                     }' -- "$@" > "$INPUT"
                                                             fi
                                                             application
-                                                            STANDARD_ERROR="$( jq --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || failure 8856851932761746
+                                                            STANDARD_ERROR="$( jq --raw-output --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || failure 8856851932761746
                                                             echo -n "$STANDARD_ERROR" >&2
-                                                            STANDARD_OUTPUT="$( jq --arg DEFAULT_STANDARD_OUTPUT "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"] // $DEFAULT_STANDARD_OUTPUT' "$OUTPUT" )" || failure 9396616715561937
+                                                            STANDARD_OUTPUT="$( jq --raw-output --arg DEFAULT_STANDARD_OUTPUT "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"] // $DEFAULT_STANDARD_OUTPUT' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
-                                                            STATUS="$( jq --arg DEFAULT_STATUS "$DEFAULT_STATUS" --raw-output '.["status"] // $DEFAULT_STATUS' "$OUTPUT" )" || failure 9357282994784138
+                                                            STATUS="$( jq --raw-output --arg DEFAULT_STATUS "$DEFAULT_STATUS" --raw-output '.["status"] // $DEFAULT_STATUS' "$OUTPUT" )" || failure 9357282994784138
                                                             exit "$STATUS"
                                                         '' ;
                                                 } ;
