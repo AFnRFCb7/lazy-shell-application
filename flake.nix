@@ -243,7 +243,7 @@
 #                                                                            if ! diff --unified /tmp/expected /tmp/observed then
 #                                                                                failure 1145694589525674
 #                                                                            fi
-                                                                        '' ;
+#                                                                        '' ;
                                                                 } ;
                                                         in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
                                                 in
