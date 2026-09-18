@@ -74,12 +74,14 @@
                                                                                                     ] ;
                                                                                                 text =
                                                                                                     ''
+                                                                                                        echo -en "\n\n" > /output
                                                                                                         if application > /private/standard-output 2> /private/standard-error
                                                                                                         then
                                                                                                             STATUS="$?"
                                                                                                         else
                                                                                                             STATUS="$?"
                                                                                                         fi
+                                                                                                        echo -en "\n\n" > /output
                                                                                                         jq \
                                                                                                             --null-input \
                                                                                                             --rawfile STANDARD_ERROR /private/standard-error \
