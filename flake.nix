@@ -248,7 +248,7 @@
                                                         in ''${ check-parameters.client }.success("test-script")'' ;
                                                 in
                                                     {
-                                                        name = builtins.concatStringsSep "-" [ "order" ( builtins.toString order ) ] ;
+                                                        name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
                                                         order = order ;
                                                         test = nixos-test ;
                                                     } ;
