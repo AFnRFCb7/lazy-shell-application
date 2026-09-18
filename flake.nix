@@ -116,9 +116,6 @@
                                                         ] ;
                                                     text =
                                                         ''
-                                                            DEFAULT_STANDARD_ERROR=""
-                                                            DEFAULT_STANDARD_OUTPUT=""
-                                                            DEFAULT_STATUS=0
                                                             INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
@@ -145,11 +142,11 @@
                                                                     }' -- "$@" > "$INPUT"
                                                             fi
                                                             application
-                                                            STANDARD_ERROR="$( jq --raw-output --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || failure 8856851932761746
+                                                            STANDARD_ERROR="$( jq --raw-output --raw-output '.["standard-error"]' "$OUTPUT" )" || failure 8856851932761746
                                                             echo -n "$STANDARD_ERROR" >&2
-                                                            STANDARD_OUTPUT="$( jq --raw-output --arg DEFAULT_STANDARD_OUTPUT "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"] // $DEFAULT_STANDARD_OUTPUT' "$OUTPUT" )" || failure 9396616715561937
+                                                            STANDARD_OUTPUT="$( jq --raw-output "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
-                                                            STATUS="$( jq --raw-output --arg DEFAULT_STATUS "$DEFAULT_STATUS" --raw-output '.["status"] // $DEFAULT_STATUS' "$OUTPUT" )" || failure 9357282994784138
+                                                            STATUS="$( jq --raw-output --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
                                                             exit "$STATUS"
                                                         '' ;
                                                 } ;
@@ -229,7 +226,6 @@
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
                                                                             echo ${ check-parameters.status } > /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
-                                                                            echo 1723258852938545 6812455447826446 >&2
                                                                             exec 0<&-
                                                                             if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
@@ -239,13 +235,9 @@
                                                                             fi
                                                                             if ! diff --unified /tmp/expected /tmp/observed
                                                                             then
-                                                                                echo 1723258852938545 4882115175477273
-                                                                                echo 1723258852938545 2296514963972582 >&2
                                                                                 if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
-                                                                                failure 1723258852938545  9636281244391215
                                                                                 failure 1145694589525674
                                                                             fi
-                                                                            echo 1723258852938545 9466863392976566 >&2
                                                                         '' ;
                                                                 } ;
                                                         in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
