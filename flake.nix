@@ -255,14 +255,15 @@
 #                                                                            else
 #                                                                                echo "$?" > /tmp/observed/status
 #                                                                            fi
-                                                                            echo 1723258852938545 4882115175477273
-                                                                            echo 1723258852938545 2296514963972582 >&2
-                                                                            if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
-                                                                            failure 1723258852938545  9636281244391215
                                                                             if ! diff --unified /tmp/expected /tmp/observed
                                                                             then
+                                                                                echo 1723258852938545 4882115175477273
+                                                                                echo 1723258852938545 2296514963972582 >&2
+                                                                                if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
+                                                                                failure 1723258852938545  9636281244391215
                                                                                 failure 1145694589525674
                                                                             fi
+                                                                            echo 1723258852938545 9466863392976566 >&2
                                                                         '' ;
                                                                 } ;
                                                         in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
