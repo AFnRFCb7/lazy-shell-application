@@ -120,12 +120,12 @@
                                                             DEFAULT_STANDARD_ERROR=""
                                                             DEFAULT_STANDARD_OUTPUT=""
                                                             DEFAULT_STATUS=0
-                                                            if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
+                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
                                                             export OUTPUT
-                                                            ### if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
+                                                            if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             trap cleanup EXIT
                                                             if [[ -t 0 ]]
                                                             then
