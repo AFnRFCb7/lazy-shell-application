@@ -44,8 +44,8 @@
                                                                     {
                                                                         extraBwrapArgs =
                                                                             [
-                                                                                "--ro-bind" "$INPUT" "/input"
-                                                                                "--bind" "$OUTPUT" "/output"
+                                                                                "--ro-bind" "$INPUT" "/data/input"
+                                                                                "--bind" "$OUTPUT" "/data/output"
                                                                                 "--tmpfs" "/private/standard-error"
                                                                                 "--tmpfs" "/private/standard-output"
                                                                                 "--tmpfs" "/private/status"
@@ -75,14 +75,26 @@
                                                                                                     ] ;
                                                                                                 text =
                                                                                                     ''
-                                                                                                        echo -en "\n\n" > /output
-                                                                                                        if application > /private/standard-output 2> /private/standard-error
+                                                                                                        mapfile -t ARGUMENTS < <(
+                                                                                                            jq --raw-output '.arguments[]' /data/input.json
+                                                                                                        )
+                                                                                                        if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /data/input.json > /dev/null
                                                                                                         then
-                                                                                                            STATUS="$?"
+                                                                                                            STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /data/input.json )" || failure 7828132754944749
+                                                                                                            if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
+                                                                                                            then
+                                                                                                                STATUS="$?"
+                                                                                                            else
+                                                                                                                STATUS="$?"
+                                                                                                            fi
                                                                                                         else
-                                                                                                            STATUS="$?"
+                                                                                                            if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
+                                                                                                            then
+                                                                                                                STATUS="$?"
+                                                                                                            else
+                                                                                                                STATUS="$?"
+                                                                                                            fi
                                                                                                         fi
-                                                                                                        echo -en "\n\n" > /output
                                                                                                         jq \
                                                                                                             --null-input \
                                                                                                             --rawfile STANDARD_ERROR /private/standard-error \
@@ -92,7 +104,7 @@
                                                                                                                 "standard-error" : $STANDARD_ERROR ,
                                                                                                                 "standard-output" : $STANDARD_OUTPUT ,
                                                                                                                 "status" : $STATUS
-                                                                                                            }' > /output
+                                                                                                            }' > /data/output.json
                                                                                                     '' ;
                                                                                             }
                                                                                     )
