@@ -172,7 +172,7 @@
                                     coreutils = coreutils ;
                                     failure = failure 3885643131463398 ;
                                     jq = jq ;
-                                    nix = nix ;
+                                    nix = visitor { null = path : value : value ; } nix ;
                                     visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
                                 } ;
