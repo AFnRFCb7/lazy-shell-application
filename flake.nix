@@ -130,8 +130,9 @@
                                                             ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             if [[ -t 0 ]]
                                                             then
+                                                                ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 162 ; fi
+                                                                STANDARD_INPUT="$( cat )" || exit 198 # failure 6712938899436674
                                                                 if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 162 ; fi
-                                                                STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                 jq \
                                                                     --null-input \
                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
