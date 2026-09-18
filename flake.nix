@@ -214,7 +214,7 @@
                                                         writeShellApplication = writeShellApplication ;
                                                     } ;
                                                 nixos-test =
-                                                    parameters.nixosTest
+                                                    check-parameters.nixosTest
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = parameters.nodes ;
