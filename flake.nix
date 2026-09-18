@@ -225,6 +225,7 @@
                                                         test-script =
                                                             writeShellApplication
                                                                 {
+                                                                    text = "" ;
                                                                     name = "test-script" ;
 #                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils root-parameters.failure ] ;
 #                                                                    text =
