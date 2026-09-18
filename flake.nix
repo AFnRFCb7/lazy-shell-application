@@ -95,7 +95,7 @@
                                                                     }
                                                             )
                                                             (
-                                                                writeShellScriptApplication
+                                                                root-parameters.writeShellApplication
                                                                     {
                                                                         name = "cleanup" ;
                                                                         runtimeInputs = [ coreutils nix ] ;
