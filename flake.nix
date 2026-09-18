@@ -50,7 +50,7 @@
                                                                                 "--tmpfs" "/scratch"
                                                                             ] ;
                                                                         name = "application" ;
-                                                                        runScript = ''application $@'' ;
+                                                                        runScript = "application" ;
                                                                         targetPkgs =
                                                                             pkgs :
                                                                                 [
@@ -140,6 +140,7 @@
                                                                 jq \
                                                                     --null-input \
                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                    --args \
                                                                     '{
                                                                         "arguments" : $ARGS.positional ,
                                                                         "inputs" :
@@ -150,6 +151,7 @@
                                                             else
                                                                 jq \
                                                                     --null-input \
+                                                                    --args \
                                                                     '{
                                                                         "arguments" : $ARGS.positional
                                                                     }' -- "$@" > "$INPUT"
