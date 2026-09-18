@@ -142,11 +142,11 @@
                                                                     }' -- "$@" > "$INPUT"
                                                             fi
                                                             application
-                                                            STANDARD_ERROR="$( jq --raw-output --raw-output '.["standard-error"]' "$OUTPUT" )" || failure 8856851932761746
+                                                            STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT" )" || failure 8856851932761746
                                                             echo -n "$STANDARD_ERROR" >&2
-                                                            STANDARD_OUTPUT="$( jq --raw-output "$DEFAULT_STANDARD_OUTPUT" --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
+                                                            STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
-                                                            STATUS="$( jq --raw-output --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
+                                                            STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
                                                             exit "$STATUS"
                                                         '' ;
                                                 } ;
@@ -233,7 +233,7 @@
                                                                             else
                                                                                 echo "$?" > /tmp/observed/status
                                                                             fi
-                                                                            if ! diff --unified /tmp/expected /tmp/observed
+                                                                            if ! diff --recursive --unified /tmp/expected /tmp/observed
                                                                             then
                                                                                 if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
                                                                                 failure 1145694589525674
