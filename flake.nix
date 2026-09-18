@@ -147,7 +147,7 @@
                                                                     --null-input \
                                                                     '{
                                                                         "arguments" : $ARGS.positional
-                                                                    }' -- "$@" > "$IbindfsNPUT"
+                                                                    }' -- "$@" > "$INPUT"
                                                             fi
                                                             application
                                                             STANDARD_ERROR="$( jq --arg DEFAULT_STANDARD_ERROR "$DEFAULT_STANDARD_ERROR" --raw-output '.["standard-error"] // $DEFAULT_STANDARD_ERROR' "$OUTPUT" )" || failure 8856851932761746
