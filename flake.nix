@@ -154,7 +154,9 @@
                                                             echo "STANDARD_ERROR=$STANDARD_ERROR"
                                                             echo "STANDARD_OUTPUT=$STANDARD_OUTPUT"
                                                             echo "STATUS=$STATUS"
+                                                            echo "BEFORE OUTPUT"
                                                             cat "$OUTPUT"
+                                                            echo "AFTER OUTPUT"
                                                             exit 152
                                                         '' ;
                                                 } ;
