@@ -50,7 +50,7 @@
                                                                                 "--tmpfs" "/scratch"
                                                                             ] ;
                                                                         name = "application" ;
-                                                                        runScript = "application" ;
+                                                                        runScript = ''application $@'' ;
                                                                         targetPkgs =
                                                                             pkgs :
                                                                                 [
@@ -234,7 +234,7 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = check-parameters.nodes ;
-                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ ( builtins.trace "${ builtins.concatStringsSep " " check-parameters.arguments }" test ) ] ] ) ;
+                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ] ] ) ;
                                                         } ;
                                                 test =
                                                     let
