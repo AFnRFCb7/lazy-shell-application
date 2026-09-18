@@ -16,6 +16,7 @@
                         let
                             implementation =
                                 {
+                                    mounts ,
                                     name ,
                                     runtime-inputs ,
                                     teardown ,
@@ -24,6 +25,7 @@
                                     let
                                         implementation-parameters =
                                             {
+                                                mounts = mounts ;
                                                 name = name ;
                                                 runtime-inputs = runtime-inputs ;
                                                 teardown = teardown ;
@@ -43,12 +45,28 @@
                                                                 root-parameters.buildFHSUserEnv
                                                                     {
                                                                         extraBwrapArgs =
-                                                                            [
-                                                                                "--ro-bind" "$INPUT" "/input.json"
-                                                                                "--bind" "$OUTPUT" "/output.json"
-                                                                                "--tmpfs" "/private/standard"
-                                                                                "--tmpfs" "/scratch"
-                                                                            ] ;
+                                                                            builtins.concatLists
+                                                                                [
+                                                                                    [
+                                                                                        "--ro-bind" "$INPUT" "/input.json"
+                                                                                        "--bind" "$OUTPUT" "/output.json"
+                                                                                        "--tmpfs" "/private/standard"
+                                                                                        "--tmpfs" "/scratch"
+                                                                                    ]
+                                                                                    (
+                                                                                        builtins.attrValues
+                                                                                            (
+                                                                                                let
+                                                                                                    mapper =
+                                                                                                        name : { source ? null , type } :
+                                                                                                            if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
+                                                                                                            else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
+                                                                                                            else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                            else builtins.throw "unsupported type ${ type }" ;
+                                                                                                    in builtins.concatLists ( builtins.mapAttrs mapper implementation-parameters.mounts ) ;
+                                                                                            )
+                                                                                    )
+                                                                                ] ;
                                                                         name = "application" ;
                                                                         runScript = "application" ;
                                                                         targetPkgs =
@@ -189,6 +207,7 @@
                                             writeShellApplication
                                         } :
                                         {
+                                            mounts ,
                                             name ,
                                             runtime-inputs ,
                                             text
@@ -207,6 +226,7 @@
                                                         client = client ;
                                                         coreutils = coreutils ;
                                                         findutils = findutils ;
+                                                        mounts = mounts ;
                                                         nixosTest = nixosTest ;
                                                         name = name ;
                                                         nodes = nodes ;
@@ -242,7 +262,7 @@
                                                                             echo -n ${ check-parameters.status } > /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
                                                                             exec 0<&-
-                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
                                                                                 echo -n "$?" > /tmp/observed/status
                                                                             else
