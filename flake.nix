@@ -127,9 +127,10 @@
                                                             export OUTPUT
                                                             ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             trap cleanup EXIT
-                                                            if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
+                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             if [[ -t 0 ]]
                                                             then
+                                                                if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 162 ; fi
                                                                 STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                 jq \
                                                                     --null-input \
@@ -142,6 +143,7 @@
                                                                             }
                                                                     }' -- "$@" > "$INPUT"
                                                             else
+                                                                if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 151 ; fi
                                                                 jq \
                                                                     --null-input \
                                                                     '{
