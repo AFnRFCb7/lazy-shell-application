@@ -250,7 +250,7 @@
                                                     {
                                                         name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
                                                         order = order ;
-                                                        test = nixos-test ;
+                                                        value = dependencies : nixos-test ;
                                                     } ;
                                     implementation = implementation ;
                                 } ;
