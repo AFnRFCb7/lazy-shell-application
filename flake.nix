@@ -61,7 +61,7 @@
                                                                                                     else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
                                                                                                     else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                     else builtins.throw "unsupported type ${ type }" ;
-                                                                                            in builtins.attrValues ( builtins.concatLists ( builtins.mapAttrs mapper implementation-parameters.mounts ) )
+                                                                                            in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper implementation-parameters.mounts ) )
                                                                                     )
                                                                                 ] ;
                                                                         name = "application" ;
