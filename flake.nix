@@ -76,15 +76,15 @@
                                                                                                     ''
                                                                                                         if application > /private/standard-output 2> /private/standard-error
                                                                                                         then
-                                                                                                            echo "$?" /private/status
+                                                                                                            STATUS="$?"
                                                                                                         else
-                                                                                                            echo "$?" /private/status
+                                                                                                            STATUS="$?"
                                                                                                         fi
                                                                                                         jq \
                                                                                                             --null-input \
                                                                                                             --rawfile STANDARD_ERROR /private/standard-error \
                                                                                                             --rawfile STANDARD_OUTPUT /private/standard-output \
-                                                                                                            --rawfile STATUS /private/status \
+                                                                                                            --argjson STATUS "$STATUS" \
                                                                                                             '{
                                                                                                                 "standard-error" : $STANDARD_ERROR ,
                                                                                                                 "standard-output" : $STANDARD_OUTPUT ,
