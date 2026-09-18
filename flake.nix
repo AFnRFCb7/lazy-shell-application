@@ -162,18 +162,7 @@
                                                             STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
                                                             STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
-                                                            # exit "$STATUS"
-                                                            echo
-                                                            echo "STANDARD_ERROR=$STANDARD_ERROR"
-                                                            echo "STANDARD_OUTPUT=$STANDARD_OUTPUT"
-                                                            echo "STATUS=$STATUS"
-                                                            echo "BEFORE INPUT"
-                                                            cat "$INPUT"
-                                                            echo "AFTER INPUT"
-                                                            echo "BEFORE OUTPUT"
-                                                            cat "$OUTPUT"
-                                                            echo "AFTER OUTPUT"
-                                                            exit 152
+                                                            exit "$STATUS"
                                                         '' ;
                                                 } ;
                             root-parameters =
@@ -255,9 +244,9 @@
                                                                             exec 0<&-
                                                                             if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
-                                                                                echo "$?" > /tmp/observed/status
+                                                                                echo -n "$?" > /tmp/observed/status
                                                                             else
-                                                                                echo "$?" > /tmp/observed/status
+                                                                                echo -n "$?" > /tmp/observed/status
                                                                             fi
                                                                             if ! diff --recursive --unified /tmp/expected /tmp/observed
                                                                             then
