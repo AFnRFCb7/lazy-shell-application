@@ -247,12 +247,12 @@
                                                                             mkdir --parents /tmp/expected
                                                                             ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
+                                                                            echo ${ check-parameters.status } /tmp/expected/status
+                                                                            mkdir --parents /tmp/observed
                                                                             echo 1723258852938545 4882115175477273
                                                                             echo 1723258852938545 2296514963972582 >&2
                                                                             if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
                                                                             failure 1723258852938545  9636281244391215
-                                                                            echo ${ check-parameters.status } /tmp/expected/status
-                                                                            mkdir --parents /tmp/observed
 #                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
 #                                                                            then
 #                                                                                echo "$?" > /tmp/observed/status
