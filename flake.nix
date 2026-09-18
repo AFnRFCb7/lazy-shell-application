@@ -244,7 +244,10 @@
                                                                     runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( root-parameters.failure ) ] ;
                                                                     text =
                                                                         ''
-                                                                            failure 9636281244391215
+                                                                            echo 1723258852938545 4882115175477273
+                                                                            echo 1723258852938545 2296514963972582 >&2
+                                                                            if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
+                                                                            failure 1723258852938545  9636281244391215
                                                                             mkdir --parents /tmp/expected
                                                                             ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
