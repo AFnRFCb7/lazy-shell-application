@@ -239,7 +239,7 @@
                                                                             mkdir --parents /tmp/expected
                                                                             ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
-                                                                            echo ${ check-parameters.status } > /tmp/expected/status
+                                                                            echo -n ${ check-parameters.status } > /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
                                                                             exec 0<&-
                                                                             if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
