@@ -105,7 +105,7 @@
                                                                             if implementation-parameters.teardown then
                                                                                 ''
                                                                                     rm --force "$INPUT" "$OUTPUT"
-                                                                                    nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
+                                                                                    # nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
                                                                                 ''
                                                                             else
                                                                                 ''
@@ -142,6 +142,7 @@
                                                             INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
+                                                            if true ; then exit 176 ; fi
                                                             export OUTPUT
                                                             trap cleanup EXIT
                                                             if [[ -t 0 ]]
