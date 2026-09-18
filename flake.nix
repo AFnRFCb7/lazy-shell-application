@@ -172,37 +172,53 @@
                                 {
                                     check =
                                         {
-                                            arguments ,
                                             client ,
                                             coreutils ,
                                             findutils ,
                                             nixosTest ,
                                             nodes ,
                                             order ,
-                                            standard-error ,
-                                            standard-input ,
-                                            standard-output ,
-                                            status ,
                                             test-setup ,
                                             writeShellApplication
                                         } :
+                                        {
+                                            name ,
+                                            runtime-inputs ,
+                                            text
+                                        } :
+                                        {
+                                            arguments ?  [ ] ,
+                                            standard-error ? "" ,
+                                            standard-input ? null ,
+                                            standard-output ? "" ,
+                                            status ? 0
+                                        } :
                                             let
-                                                parameters =
+                                                check-parameters =
                                                     {
-                                                        arguments = arguments ;
+                                                        arguments = visitor { string = path : value : value ; } arguments ;
                                                         client = client ;
+                                                        coreutils = coreutils ;
+                                                        findutils = findutils ;
                                                         nixosTest = nixosTest ;
+                                                        name = name ;
                                                         nodes = nodes ;
                                                         order = order ;
-                                                        standard-input = standard-input ;
+                                                        runtime-inputs = runtime-inputs ;
+                                                        standard-error = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-error ;
+                                                        standard-input = visitor { null = path : value : value ; string = path : value : builtins.toFile "standard-input" value ; } standard-input ;
+                                                        standard-output = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-output ;
+                                                        status = visitor { int = path : value : builtins.toString value ; } status ;
                                                         test-setup = test-setup ;
+                                                        text = text ;
+                                                        writeShellApplication = writeShellApplication ;
                                                     } ;
                                                 nixos-test =
                                                     parameters.nixosTest
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = parameters.nodes ;
-                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ parameters.test-setup ] ) ;
+                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ] ] ) ;
                                                         } ;
                                                 test =
                                                     let
@@ -214,11 +230,11 @@
                                                                     text =
                                                                         ''
                                                                             mkdir --parents /tmp/expected
-                                                                            ln --symbolic ${ builtins.toFile "standard-error" parameters.standard-error } /tmp/expected/standard-error
-                                                                            ln --symbolic ${ builtins.toFile "standard-output" parameters.standard-output } /tmp/expected/standard-output
-                                                                            ln --symbolic ${ builtins.toFile "status" parameters.status } /tmp/expected/status
+                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
+                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
+                                                                            echo ${ check-parameters.status } /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
-                                                                            if ${ implementation } ${ builtins.concatStringsSep "" [ parameters.arguments ] } ${ if builtins.typeOf parameters.standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
                                                                                 echo "$?" > /tmp/observed/status
                                                                             else
@@ -229,7 +245,7 @@
                                                                             fi
                                                                         '' ;
                                                                 } ;
-                                                        in ''${ client }.success("test-script")'' ;
+                                                        in ''${ check-parameters.client }.success("test-script")'' ;
                                                 in
                                                     {
                                                         name = builtins.concatStringsSep "-" [ "order" ( builtins.toString order ) ] ;
