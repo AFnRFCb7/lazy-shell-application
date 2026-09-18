@@ -147,7 +147,10 @@
                                                             STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
                                                             echo -n "$STANDARD_OUTPUT"
                                                             STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
-                                                            exit "$STATUS"
+                                                            # exit "$STATUS"
+                                                            echo
+                                                            cat "$OUTPUT"
+                                                            exit 152
                                                         '' ;
                                                 } ;
                             root-parameters =
