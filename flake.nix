@@ -53,19 +53,16 @@
                                                                                         "--tmpfs" "/private/standard"
                                                                                         "--tmpfs" "/scratch"
                                                                                     ]
-#                                                                                    (
-#                                                                                        builtins.attrValues
-#                                                                                            (
-#                                                                                                let
-#                                                                                                    mapper =
-#                                                                                                        name : { source ? null , type } :
-#                                                                                                            if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
-#                                                                                                            else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
-#                                                                                                            else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
-#                                                                                                            else builtins.throw "unsupported type ${ type }" ;
-#                                                                                                    in builtins.concatLists ( builtins.mapAttrs mapper implementation-parameters.mounts )
-#                                                                                            )
-#                                                                                    )
+                                                                                    (
+                                                                                        let
+                                                                                            mapper =
+                                                                                                name : { source ? null , type } :
+                                                                                                    if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
+                                                                                                    else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
+                                                                                                    else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                    else builtins.throw "unsupported type ${ type }" ;
+                                                                                            in builtins.attrValues ( builtins.concatLists ( builtins.mapAttrs mapper implementation-parameters.mounts ) )
+                                                                                    )
                                                                                 ] ;
                                                                         name = "application" ;
                                                                         runScript = "application" ;
