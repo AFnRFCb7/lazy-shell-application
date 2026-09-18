@@ -225,26 +225,25 @@
                                                         test-script =
                                                             writeShellApplication
                                                                 {
-                                                                    text = "" ;
                                                                     name = "test-script" ;
 #                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils root-parameters.failure ] ;
-#                                                                    text =
-#                                                                        ''
-#                                                                            mkdir --parents /tmp/expected
-#                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
-#                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
-#                                                                            echo ${ check-parameters.status } /tmp/expected/status
-#                                                                            mkdir --parents /tmp/observed
-#                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
-#                                                                            then
-#                                                                                echo "$?" > /tmp/observed/status
-#                                                                            else
-#                                                                                echo "$?" > /tmp/observed/status
-#                                                                            fi
-#                                                                            if ! diff --unified /tmp/expected /tmp/observed then
-#                                                                                failure 1145694589525674
-#                                                                            fi
-#                                                                        '' ;
+                                                                    text =
+                                                                        ''
+                                                                            mkdir --parents /tmp/expected
+                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
+                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
+                                                                            echo ${ check-parameters.status } /tmp/expected/status
+                                                                            mkdir --parents /tmp/observed
+                                                                            if ${ implementation { name = check-parameters.name ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep "" check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            then
+                                                                                echo "$?" > /tmp/observed/status
+                                                                            else
+                                                                                echo "$?" > /tmp/observed/status
+                                                                            fi
+                                                                            if ! diff --unified /tmp/expected /tmp/observed then
+                                                                                failure 1145694589525674
+                                                                            fi
+                                                                        '' ;
                                                                 } ;
                                                         in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
                                                 in
