@@ -116,7 +116,6 @@
                                                         ] ;
                                                     text =
                                                         ''
-                                                            if true ; then exit 176 ; fi
                                                             DEFAULT_STANDARD_ERROR=""
                                                             DEFAULT_STANDARD_OUTPUT=""
                                                             DEFAULT_STATUS=0
@@ -234,7 +233,7 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes = check-parameters.nodes ;
-                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ]] ) ;
+                                                            testScript = builtins.concatStringsSep "/n" ( builtins.concatLists [ check-parameters.test-setup [ test ] ] ) ;
                                                         } ;
                                                 test =
                                                     let
@@ -245,6 +244,7 @@
                                                                     runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( root-parameters.failure ) ] ;
                                                                     text =
                                                                         ''
+                                                                            failure 9636281244391215
                                                                             mkdir --parents /tmp/expected
                                                                             ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
                                                                             ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
