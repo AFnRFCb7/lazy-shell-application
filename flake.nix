@@ -116,23 +116,17 @@
                                                         ] ;
                                                     text =
                                                         ''
-                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             DEFAULT_STANDARD_ERROR=""
                                                             DEFAULT_STANDARD_OUTPUT=""
                                                             DEFAULT_STATUS=0
-                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
                                                             export OUTPUT
-                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             trap cleanup EXIT
-                                                            ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 114 ; fi
                                                             if [[ -t 0 ]]
                                                             then
-                                                                ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 162 ; fi
                                                                 STANDARD_INPUT="$( cat )" || exit 198 # failure 6712938899436674
-                                                                if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 162 ; fi
                                                                 jq \
                                                                     --null-input \
                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
@@ -144,7 +138,6 @@
                                                                             }
                                                                     }' -- "$@" > "$INPUT"
                                                             else
-                                                                ## if true ; then echo 1723258852938545 9858442885522638 >&2 && exit 151 ; fi
                                                                 jq \
                                                                     --null-input \
                                                                     '{
