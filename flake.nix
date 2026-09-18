@@ -44,8 +44,8 @@
                                                                     {
                                                                         extraBwrapArgs =
                                                                             [
-                                                                                "--ro-bind" "$INPUT" "/data/input"
-                                                                                "--bind" "$OUTPUT" "/data/output"
+                                                                                "--ro-bind" "$INPUT" "/data/input.json"
+                                                                                "--bind" "$OUTPUT" "/data/output.json"
                                                                                 "--tmpfs" "/private/standard-error"
                                                                                 "--tmpfs" "/private/standard-output"
                                                                                 "--tmpfs" "/private/status"
