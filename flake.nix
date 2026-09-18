@@ -94,6 +94,18 @@
                                                                                 ] ;
                                                                     }
                                                             )
+                                                            (
+                                                                writeShellScriptApplication
+                                                                    {
+                                                                        name = "cleanup" ;
+                                                                        runtimeInputs = [ coreutils nix ] ;
+                                                                        text =
+                                                                            ''
+                                                                                rm --force "$INPUT" "$OUTPUT"
+                                                                                nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
+                                                                            '' ;
+                                                                    }
+                                                            )
                                                         ] ;
                                                     text =
                                                         ''
@@ -124,11 +136,6 @@
                                                             export INPUT
                                                             OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
                                                             export OUTPUT
-                                                            # shellcheck disable=SC2317
-                                                            cleanup(){
-                                                                rm --force "$INPUT" "$OUTPUT"
-                                                                nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
-                                                            }
                                                             trap cleanup EXIT
                                                             if [[ -t 0 ]]
                                                             then
