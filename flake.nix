@@ -207,7 +207,7 @@
                                                         runtime-inputs = runtime-inputs ;
                                                         standard-error = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-error ;
                                                         standard-input = visitor { null = path : value : value ; string = path : value : builtins.toFile "standard-input" value ; } standard-input ;
-                                                        standard-output = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-output ;parameters.nodes
+                                                        standard-output = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-output ;
                                                         status = visitor { int = path : value : builtins.toString value ; } status ;
                                                         test-setup = test-setup ;
                                                         text = text ;
