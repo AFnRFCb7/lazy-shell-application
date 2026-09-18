@@ -245,7 +245,7 @@
                                                                             fi
                                                                         '' ;
                                                                 } ;
-                                                        in ''${ check-parameters.client }.success("test-script")'' ;
+                                                        in ''${ check-parameters.client }.succeed("test-script")'' ;
                                                 in
                                                     {
                                                         name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
