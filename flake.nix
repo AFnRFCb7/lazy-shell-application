@@ -9,7 +9,6 @@
                         coreutils ,
                         failure ,
                         jq ,
-                        nix ,
                         visitor ,
                         writeShellApplication
                     } :
@@ -19,7 +18,6 @@
                                     mounts ,
                                     name ,
                                     runtime-inputs ,
-                                    teardown ,
                                     text
                                 } :
                                     let
@@ -28,7 +26,6 @@
                                                 mounts = mounts ;
                                                 name = name ;
                                                 runtime-inputs = runtime-inputs ;
-                                                teardown = teardown ;
                                                 text = text ;
                                             } ;
                                         in
@@ -40,7 +37,6 @@
                                                             root-parameters.coreutils
                                                             root-parameters.failure
                                                             root-parameters.jq
-                                                            root-parameters.nix
                                                             (
                                                                 root-parameters.buildFHSUserEnv
                                                                     {
@@ -128,17 +124,11 @@
                                                                 root-parameters.writeShellApplication
                                                                     {
                                                                         name = "cleanup" ;
-                                                                        runtimeInputs = [ coreutils nix ] ;
+                                                                        runtimeInputs = [ coreutils ] ;
                                                                         text =
-                                                                            if implementation-parameters.teardown then
-                                                                                ''
-                                                                                    rm --force "$INPUT" "$OUTPUT"
-                                                                                    # nohup nice adjustment 19 nix-collect-garbage --max-jobs 1 --cores 1 &
-                                                                                ''
-                                                                            else
-                                                                                ''
-                                                                                    rm --force "$INPUT" "$OUTPUT"
-                                                                                '' ;
+                                                                            ''
+                                                                                rm --force "$INPUT" "$OUTPUT"
+                                                                            '' ;
                                                                     }
                                                             )
                                                         ] ;
@@ -186,7 +176,6 @@
                                     coreutils = coreutils ;
                                     failure = failure 3885643131463398 ;
                                     jq = jq ;
-                                    nix = nix ;
                                     visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
                                 } ;
@@ -259,7 +248,7 @@
                                                                             echo -n ${ check-parameters.status } > /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
                                                                             exec 0<&-
-                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; runtime-inputs = check-parameters.runtime-inputs ; teardown = false ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
                                                                                 echo -n "$?" > /tmp/observed/status
                                                                             else
