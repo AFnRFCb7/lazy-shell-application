@@ -17,6 +17,7 @@
                                 {
                                     mounts ,
                                     name ,
+                                    post ,
                                     runtime-inputs ,
                                     text
                                 } :
@@ -25,6 +26,7 @@
                                             {
                                                 mounts = mounts ;
                                                 name = name ;
+                                                post = post ;
                                                 runtime-inputs = runtime-inputs ;
                                                 text = text ;
                                             } ;
@@ -126,9 +128,15 @@
                                                                         name = "cleanup" ;
                                                                         runtimeInputs = [ coreutils ] ;
                                                                         text =
-                                                                            ''
-                                                                                rm --force "$INPUT" "$OUTPUT"
-                                                                            '' ;
+                                                                            if builtins.typeOf implementation-parameters.post == "null" then
+                                                                                ''
+                                                                                    rm --force "$INPUT" "$OUTPUT"
+                                                                                ''
+                                                                            else
+                                                                                ''
+                                                                                    rm --force "$INPUT" "$OUTPUT"
+                                                                                    nohup nice --adjustment 19 ${ implementation-parameters.post } &
+                                                                                '' ;
                                                                     }
                                                             )
                                                         ] ;
@@ -248,7 +256,7 @@
                                                                             echo -n ${ check-parameters.status } > /tmp/expected/status
                                                                             mkdir --parents /tmp/observed
                                                                             exec 0<&-
-                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; post = null ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
                                                                             then
                                                                                 echo -n "$?" > /tmp/observed/status
                                                                             else
