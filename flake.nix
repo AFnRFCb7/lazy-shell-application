@@ -7,7 +7,6 @@
                     {
                         buildFHSUserEnv ,
                         coreutils ,
-                        failure ,
                         jq ,
                         visitor ,
                         writeShellApplication
