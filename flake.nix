@@ -8,7 +8,6 @@
                         buildFHSUserEnv ,
                         coreutils ,
                         jq ,
-                        visitor ,
                         writeShellApplication
                     } :
                         let
@@ -181,7 +180,6 @@
                                     buildFHSUserEnv = buildFHSUserEnv ;
                                     coreutils = coreutils ;
                                     jq = jq ;
-                                    visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
                                 } ;
                             in
@@ -214,7 +212,7 @@
                                             let
                                                 check-parameters =
                                                     {
-                                                        arguments = visitor { string = path : value : value ; } arguments ;
+                                                        arguments = arguments ;
                                                         client = client ;
                                                         coreutils = coreutils ;
                                                         findutils = findutils ;
@@ -224,11 +222,11 @@
                                                         nodes = nodes ;
                                                         order = order ;
                                                         runtime-inputs = runtime-inputs ;
-                                                        standard-error = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-error ;
-                                                        standard-input = visitor { null = path : value : value ; string = path : value : builtins.toFile "standard-input" value ; } standard-input ;
-                                                        standard-output = visitor { string = path : value : builtins.toFile "standard-error" value ; } standard-output ;
-                                                        status = visitor { int = path : value : builtins.toString value ; } status ;
-                                                        test-setup = visitor { string = path : value : value ; } test-setup ;
+                                                        standard-error = builtins.toFile "standard-error" standard-error ;
+                                                        standard-input = builtins.toFile "standard-input" standard-input ;
+                                                        standard-output = builtins.toFile "standard-error" standard-output ;
+                                                        status = builtins.toString status ;
+                                                        test-setup = test-setup ;
                                                         text = text ;
                                                         writeShellApplication = writeShellApplication ;
                                                     } ;
