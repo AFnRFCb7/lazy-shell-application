@@ -295,15 +295,7 @@
                                                                                         }
                                                                                 )
                                                                             ] ;
-                                                                        imports =
-                                                                            [
-                                                                                (
-                                                                                    { } :
-                                                                                        {
-
-                                                                                        }
-                                                                                    )
-                                                                                ] ;
+                                                                        imports = [ ] ;
                                                                     } ;
                                                             testScript =
                                                                 ''
