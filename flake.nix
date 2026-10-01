@@ -36,7 +36,6 @@
                                                     runtimeInputs =
                                                         [
                                                             root-parameters.coreutils
-                                                            root-parameters.failure
                                                             root-parameters.jq
                                                             (
                                                                 root-parameters.buildFHSUserEnv
