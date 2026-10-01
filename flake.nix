@@ -249,16 +249,7 @@
                                                                                                     pkgs.coreutils
                                                                                                     pkgs.diffutils
                                                                                                     pkgs.jq
-                                                                                                    (
-                                                                                                        config.failure
-                                                                                                            {
-                                                                                                                compile-time-arguments = compile-time-arguments ;
-                                                                                                                shell-application = shell-application ;
-                                                                                                                planned-error = planned-error ;
-                                                                                                                visitor = visitor ;
-                                                                                                                unplanned-error = unplanned-error ;
-                                                                                                            }
-                                                                                                    )
+                                                                                                    ( config.failure { } )
                                                                                                 ] ;
                                                                                             text = "" ;
 #                                                                                            text =
