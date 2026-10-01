@@ -294,35 +294,35 @@
                                                                     client.succeed("test-script")
                                                                 '' ;
                                                         } ;
-                                                test =
-                                                    let
-                                                        test-script =
-                                                            writeShellApplication
-                                                                {
-                                                                    name = "test-script" ;
-                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( config.failure { } ) ] ;
-                                                                    text =
-                                                                        ''
-                                                                            mkdir --parents /tmp/expected
-                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
-                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
-                                                                            echo -n ${ check-parameters.status } > /tmp/expected/status
-                                                                            mkdir --parents /tmp/observed
-                                                                            exec 0<&-
-                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; post = null ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
-                                                                            then
-                                                                                echo -n "$?" > /tmp/observed/status
-                                                                            else
-                                                                                echo -n "$?" > /tmp/observed/status
-                                                                            fi
-                                                                            if ! diff --recursive --unified /tmp/expected /tmp/observed
-                                                                            then
-                                                                                if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
-                                                                                failure 1145694589525674
-                                                                            fi
-                                                                        '' ;
-                                                                } ;
-                                                        in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
+#                                                test =
+#                                                    let
+#                                                        test-script =
+#                                                            writeShellApplication
+#                                                                {
+#                                                                    name = "test-script" ;
+#                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( config.failure { } ) ] ;
+#                                                                    text =
+#                                                                        ''
+#                                                                            mkdir --parents /tmp/expected
+#                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
+#                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
+#                                                                            echo -n ${ check-parameters.status } > /tmp/expected/status
+#                                                                            mkdir --parents /tmp/observed
+#                                                                            exec 0<&-
+#                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; post = null ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
+#                                                                            then
+#                                                                                echo -n "$?" > /tmp/observed/status
+#                                                                            else
+#                                                                                echo -n "$?" > /tmp/observed/status
+#                                                                            fi
+#                                                                            if ! diff --recursive --unified /tmp/expected /tmp/observed
+#                                                                            then
+#                                                                                if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
+#                                                                                failure 1145694589525674
+#                                                                            fi
+#                                                                        '' ;
+#                                                                } ;
+#                                                        in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
                                                 in
                                                     {
                                                         name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
