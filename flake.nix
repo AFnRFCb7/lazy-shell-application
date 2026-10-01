@@ -244,7 +244,7 @@
                                                             writeShellApplication
                                                                 {
                                                                     name = "test-script" ;
-                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( failure { } ) ] ;
+                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( config.failure { } ) ] ;
                                                                     text =
                                                                         ''
                                                                             mkdir --parents /tmp/expected
