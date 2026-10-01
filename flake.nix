@@ -181,7 +181,6 @@
                                 {
                                     buildFHSUserEnv = buildFHSUserEnv ;
                                     coreutils = coreutils ;
-                                    failure = failure 3885643131463398 ;
                                     jq = jq ;
                                     visitor = visitor ;
                                     writeShellApplication = writeShellApplication ;
