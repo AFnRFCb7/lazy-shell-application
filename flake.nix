@@ -190,6 +190,7 @@
                                         {
                                             client ,
                                             coreutils ,
+                                            failure ,
                                             findutils ,
                                             nixosTest ,
                                             nodes ,
@@ -286,7 +287,7 @@
                                                                                         }
                                                                                 )
                                                                             ] ;
-                                                                        imports = [ ] ;
+                                                                        imports = [ failure ] ;
                                                                     } ;
                                                             testScript =
                                                                 ''
