@@ -108,6 +108,7 @@
                                                                                                                     name = "user-environment" ;
                                                                                                                     runScript =
                                                                                                                         ''
+                                                                                                                            cat /input >&2
                                                                                                                             mapfile -t ARGUMENTS < <(
                                                                                                                                 jq --raw-output '.arguments[]' /input
                                                                                                                             )
@@ -256,7 +257,7 @@
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
                                                                                                                     _pkgs.which
-                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = builtins.trace text text ; } )
+                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
