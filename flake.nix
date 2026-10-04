@@ -187,7 +187,8 @@
                                 {
                                     check =
                                         {
-                                            nixosTest
+                                            nixosTest ,
+                                            obviated-by
                                         } :
                                         {
                                             mounts ,
