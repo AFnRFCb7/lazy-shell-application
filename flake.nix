@@ -5,197 +5,184 @@
             {
                 lib =
                     {
-                        buildFHSUserEnv ,
-                        coreutils ,
-                        jq ,
-                        writeShellApplication
+                        options-identity ? x : x
                     } :
                         let
                             implementation =
-                                {
-                                    mounts ,
-                                    name ,
-                                    post ,
-                                    runtime-inputs ,
-                                    text
-                                } :
+                                { config , lib , pkgs , ... } :
                                     let
-                                        implementation-parameters =
-                                            {
-                                                mounts = mounts ;
-                                                name = name ;
-                                                post = post ;
-                                                runtime-inputs = runtime-inputs ;
-                                                text = text ;
-                                            } ;
+                                        _config = config-identity config ;
+                                        _lib = lib-identity lib ;
+                                        _pkgs = pkgs-identity pkgs ;
                                         in
-                                            root-parameters.writeShellApplication
-                                                {
-                                                    name = implementation-parameters.name ;
-                                                    runtimeInputs =
-                                                        [
-                                                            root-parameters.coreutils
-                                                            root-parameters.jq
-                                                            (
-                                                                root-parameters.buildFHSUserEnv
+                                            {
+                                                options =
+                                                    options-identity
+                                                        {
+                                                            lazy-shell-application =
+                                                                _lib.mkOption
                                                                     {
-                                                                        extraBwrapArgs =
-                                                                            builtins.concatLists
-                                                                                [
-                                                                                    [
-                                                                                        "--ro-bind" "$INPUT" "/input.json"
-                                                                                        "--bind" "$OUTPUT" "/output.json"
-                                                                                        "--tmpfs" "/private/standard"
-                                                                                        "--tmpfs" "/scratch"
-                                                                                    ]
-                                                                                    (
-                                                                                        let
-                                                                                            mapper =
-                                                                                                name : { source ? null , type } :
-                                                                                                    if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
-                                                                                                    else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
-                                                                                                    else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
-                                                                                                    else builtins.throw "unsupported type ${ type }" ;
-                                                                                            in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper implementation-parameters.mounts ) )
-                                                                                    )
-                                                                                ] ;
-                                                                        name = "application" ;
-                                                                        runScript = "application" ;
-                                                                        targetPkgs =
-                                                                            pkgs :
-                                                                                [
-                                                                                    (
-                                                                                        pkgs.writeShellApplication
-                                                                                            {
-                                                                                                name = "application" ;
-                                                                                                runtimeInputs =
-                                                                                                    [
-                                                                                                        pkgs.coreutils
-                                                                                                        pkgs.jq
-                                                                                                        (
-                                                                                                            pkgs.writeShellApplication
-                                                                                                                {
-                                                                                                                    name = "application" ;
-                                                                                                                    runtimeInputs = implementation-parameters.runtime-inputs pkgs ;
-                                                                                                                    text = implementation-parameters.text ;
-                                                                                                                }
-                                                                                                        )
-                                                                                                    ] ;
-                                                                                                text =
-                                                                                                    ''
-                                                                                                        mapfile -t ARGUMENTS < <(
-                                                                                                            jq --raw-output '.arguments[]' /input.json
-                                                                                                        )
-                                                                                                        if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /dev/null
-                                                                                                        then
-                                                                                                            STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
-                                                                                                            if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
-                                                                                                            then
-                                                                                                                STATUS="$?"
-                                                                                                            else
-                                                                                                                STATUS="$?"
-                                                                                                            fi
-                                                                                                        else
-                                                                                                            if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
-                                                                                                            then
-                                                                                                                STATUS="$?"
-                                                                                                            else
-                                                                                                                STATUS="$?"
-                                                                                                            fi
-                                                                                                        fi
-                                                                                                        jq \
-                                                                                                            --null-input \
-                                                                                                            --rawfile STANDARD_ERROR /private/standard-error \
-                                                                                                            --rawfile STANDARD_OUTPUT /private/standard-output \
-                                                                                                            --argjson STATUS "$STATUS" \
-                                                                                                            '{
-                                                                                                                "standard-error" : $STANDARD_ERROR ,
-                                                                                                                "standard-output" : $STANDARD_OUTPUT ,
-                                                                                                                "status" : $STATUS
-                                                                                                            }' > /output.json
-                                                                                                    '' ;
-                                                                                            }
-                                                                                    )
-                                                                                ] ;
-                                                                    }
-                                                            )
-                                                            (
-                                                                root-parameters.writeShellApplication
-                                                                    {
-                                                                        name = "cleanup" ;
-                                                                        runtimeInputs = [ coreutils ] ;
-                                                                        text =
-                                                                            if builtins.typeOf implementation-parameters.post == "null" then
-                                                                                ''
-                                                                                    rm --force "$INPUT" "$OUTPUT"
-                                                                                ''
-                                                                            else
-                                                                                ''
-                                                                                    rm --force "$INPUT" "$OUTPUT"
-                                                                                    nohup nice --adjustment 19 ${ implementation-parameters.post } &
-                                                                                '' ;
-                                                                    }
-                                                            )
-                                                        ] ;
-                                                    text =
-                                                        ''
-                                                            INPUT="$( mktemp --suffix ".json" )" || failure 7258549447146326
-                                                            export INPUT
-                                                            OUTPUT="$( mktemp --suffix ".json" )" || failure 7151471466863861
-                                                            export OUTPUT
-                                                            trap cleanup EXIT
-                                                            if [[ -t 0 ]]
-                                                            then
-                                                                STANDARD_INPUT="$( cat )" || exit 198 # failure 6712938899436674
-                                                                jq \
-                                                                    --null-input \
-                                                                    --arg STANDARD_INPUT "$STANDARD_INPUT" \
-                                                                    --args \
-                                                                    '{
-                                                                        "arguments" : $ARGS.positional ,
-                                                                        "inputs" :
+                                                                        default =
                                                                             {
-                                                                                "standard" : $STANDARD_INPUT
-                                                                            }
-                                                                    }' -- "$@" > "$INPUT"
-                                                            else
-                                                                jq \
-                                                                    --null-input \
-                                                                    --args \
-                                                                    '{
-                                                                        "arguments" : $ARGS.positional
-                                                                    }' -- "$@" > "$INPUT"
-                                                            fi
-                                                            application
-                                                            STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT" )" || failure 8856851932761746
-                                                            echo -n "$STANDARD_ERROR" >&2
-                                                            STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
-                                                            echo -n "$STANDARD_OUTPUT"
-                                                            STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
-                                                            exit "$STATUS"
-                                                        '' ;
-                                                } ;
-                            root-parameters =
-                                {
-                                    buildFHSUserEnv = buildFHSUserEnv ;
-                                    coreutils = coreutils ;
-                                    jq = jq ;
-                                    writeShellApplication = writeShellApplication ;
-                                } ;
+                                                                                mounts ,
+                                                                                name ,
+                                                                                post ,
+                                                                                runtime-inputs ,
+                                                                                text
+                                                                            } :
+                                                                                _pkgs.writeShellApplication
+                                                                                    {
+                                                                                        name = name ;
+                                                                                        runtimeInputs =
+                                                                                            [
+                                                                                                ( _config.failure { } )
+                                                                                                _pkgs.coreutils
+                                                                                                (
+                                                                                                    _pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "cleanup" ;
+                                                                                                            runtimeInputs = [ coreutils ] ;
+                                                                                                            text =
+                                                                                                                config.visitor
+                                                                                                                    { }
+                                                                                                                    {
+                                                                                                                        null =
+                                                                                                                            path : value :
+                                                                                                                                ''
+                                                                                                                                    rm --force "$INPUT_FILE" "$OUTPUT_FILE"
+                                                                                                                                '' ;
+                                                                                                                        string =
+                                                                                                                            path : value :
+                                                                                                                                ''
+                                                                                                                                    rm --force "$INPUT_FILE" "$OUTPUT_FILE"
+                                                                                                                                    nohup nice --adjustment 19 "${ value }"
+                                                                                                                                '' ;
+                                                                                                                    }
+                                                                                                                    post ;
+                                                                                                        }
+                                                                                                )
+                                                                                                (
+                                                                                                    _pkgs.buildFHSUserEnv
+                                                                                                        {
+                                                                                                            extraBwrapArgs =
+                                                                                                                builtins.concatLists
+                                                                                                                    [
+                                                                                                                        [
+                                                                                                                            "--ro-bind" "$INPUT_FILE" "/input"
+                                                                                                                        ]
+                                                                                                                        (
+                                                                                                                            let
+                                                                                                                                mapper =
+                                                                                                                                    name : { source ? null , type } :
+                                                                                                                                        if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
+                                                                                                                                        else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
+                                                                                                                                        else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                                                        else builtins.throw "unsupported type ${ type }" ;
+                                                                                                                                in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper implementation-parameters.mounts ) )
+                                                                                                                        )
+                                                                                                                        [
+                                                                                                                            "--bind" "$OUTPUT_FILE" "/output"
+                                                                                                                            "--tmpfs" "/private"
+                                                                                                                            "--tmpfs" "/temporary"
+                                                                                                                        ]
+                                                                                                                    ] ;
+                                                                                                            name = "user-environment" ;
+                                                                                                            runScript =
+                                                                                                                ''
+                                                                                                                    mapfile -t ARGUMENTS < <(
+                                                                                                                        jq --raw-output '.arguments[]' /input.json
+                                                                                                                    )
+                                                                                                                    if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
+                                                                                                                    then
+                                                                                                                        STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
+                                                                                                                        if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
+                                                                                                                        then
+                                                                                                                            STATUS="$?"
+                                                                                                                        else
+                                                                                                                            STATUS="$?"
+                                                                                                                        fi
+                                                                                                                    else
+                                                                                                                        if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
+                                                                                                                        then
+                                                                                                                            STATUS="$?"
+                                                                                                                        else
+                                                                                                                            STATUS="$?"
+                                                                                                                        fi
+                                                                                                                    fi
+                                                                                                                    jq \
+                                                                                                                        --null-input \
+                                                                                                                        --rawfile STANDARD_ERROR /private/standard-error \
+                                                                                                                        --rawfile STANDARD_OUTPUT /private/standard-output \
+                                                                                                                        --argjson STATUS "$STATUS" \
+                                                                                                                        '{
+                                                                                                                            "standard-error" : $STANDARD_ERROR ,
+                                                                                                                            "standard-output" : $STANDARD_OUTPUT ,
+                                                                                                                            "status" : $STATUS
+                                                                                                                        }' > /output.json
+                                                                                                                '' ;
+                                                                                                            targetPkgs =
+                                                                                                                pkgs :
+                                                                                                                    [
+                                                                                                                        ( _config.failure { } )
+                                                                                                                        pkgs.coreutils
+                                                                                                                        pkgs.jq
+                                                                                                                        (
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "application" ;
+                                                                                                                                    runtimeInputs = runtime-inputs pkgs ;
+                                                                                                                                    text = text ;
+                                                                                                                                }
+                                                                                                                        )
+                                                                                                                    ] ;
+                                                                                                        }
+                                                                                                )
+                                                                                            ] ;
+                                                                                        text =
+                                                                                            ''
+                                                                                                INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
+                                                                                                export INPUT_FILE
+                                                                                                OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
+                                                                                                export OUTPUT_FILE
+                                                                                                trap cleanup EXIT
+                                                                                                if [[ -t 0 ]]
+                                                                                                then
+                                                                                                    STANDARD_INPUT="$( cat )" || failure 6712938899436674
+                                                                                                    jq \
+                                                                                                        --null-input \
+                                                                                                        --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                                                        --args \
+                                                                                                        '{
+                                                                                                            "arguments" : $ARGS.positional ,
+                                                                                                            "inputs" :
+                                                                                                                {
+                                                                                                                    "standard" : $STANDARD_INPUT
+                                                                                                                }
+                                                                                                        }' -- "$@" > "$INPUT"
+                                                                                                else
+                                                                                                    jq \
+                                                                                                        --null-input \
+                                                                                                        --args \
+                                                                                                        '{
+                                                                                                            "arguments" : $ARGS.positional
+                                                                                                        }' -- "$@" > "$INPUT"
+                                                                                                fi
+                                                                                                user-environment
+                                                                                                STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT" )" || failure 8856851932761746
+                                                                                                echo -n "$STANDARD_ERROR" >&2
+                                                                                                STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT" )" || failure 9396616715561937
+                                                                                                echo -n "$STANDARD_OUTPUT"
+                                                                                                STATUS="$( jq --raw-output '.["status"]' "$OUTPUT" )" || failure 9357282994784138
+                                                                                                exit "$STATUS"
+                                                                                            '' ;
+                                                                                    } ;
+                                                                        type = _lib.types.functionTo _lib.types.package ;
+                                                                    } ;
+                                                        } ;
+                                            } ;
                             in
                                 {
                                     check =
-                                        {
-                                            client ,
-                                            coreutils ,
-                                            failure ,
-                                            findutils ,
-                                            nixosTest ,
-                                            nodes ,
-                                            order ,
-                                            test-setup ,
-                                            writeShellApplication
-                                        } :
                                         {
                                             mounts ,
                                             name ,
@@ -203,35 +190,17 @@
                                             text
                                         } :
                                         {
-                                            arguments ?  [ ] ,
+                                            arguments ? [ ] ,
                                             standard-error ? "" ,
                                             standard-input ? null ,
                                             standard-output ? "" ,
                                             status ? 0
                                         } :
                                             let
-                                                check-parameters =
-                                                    {
-                                                        arguments = arguments ;
-                                                        client = client ;
-                                                        coreutils = coreutils ;
-                                                        findutils = findutils ;
-                                                        mounts = mounts ;
-                                                        nixosTest = nixosTest ;
-                                                        name = name ;
-                                                        nodes = nodes ;
-                                                        order = order ;
-                                                        runtime-inputs = runtime-inputs ;
-                                                        standard-error = builtins.toFile "standard-error" standard-error ;
-                                                        standard-input = builtins.toFile "standard-input" standard-input ;
-                                                        standard-output = builtins.toFile "standard-error" standard-output ;
-                                                        status = builtins.toString status ;
-                                                        test-setup = test-setup ;
-                                                        text = text ;
-                                                        writeShellApplication = writeShellApplication ;
-                                                    } ;
-                                                nixos-test =
-                                                    check-parameters.nixosTest
+                                                _config = config-identity config ;
+                                                _pkgs = pkgs-identity pkgs ;
+                                                test =
+                                                    _pkgs.nixosTest
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
@@ -240,93 +209,46 @@
                                                                         environment.systemPackages =
                                                                             [
                                                                                 (
-                                                                                    pkgs.writeShellApplication
+                                                                                    _pkgs.writeShellApplication
                                                                                         {
                                                                                             name = "test-script" ;
                                                                                             runtimeInputs =
                                                                                                 [
-                                                                                                    pkgs.coreutils
-                                                                                                    pkgs.diffutils
-                                                                                                    pkgs.jq
-                                                                                                    ( config.failure { } )
+                                                                                                    _pkgs.coreutils
+                                                                                                    _pkgs.diffutils
+                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                 ] ;
-                                                                                            text = "" ;
-#                                                                                            text =
-#                                                                                                ''
-#                                                                                                    OUT=/build/test
-#                                                                                                    COMPILE_TIME_ARGUMENTS="$( cat ${ builtins.toFile "compile-time-arguments.json" ( builtins.toJSON compile-time-arguments ) } )" || exit ${ builtins.toString unplanned-error }
-#                                                                                                    RUN_TIME_ARGUMENTS="$( cat ${ builtins.toFile "run-time-arguments.json" ( builtins.toJSON run-time-arguments ) } )" || exit ${ builtins.toString unplanned-error }
-#                                                                                                    mkdir --parents "$OUT/expected"
-#                                                                                                    jq \
-#                                                                                                        --null-input \
-#                                                                                                        --sort-keys \
-#                                                                                                        --argjson COMPILE_TIME_ARGUMENTS "$COMPILE_TIME_ARGUMENTS" \
-#                                                                                                        --argjson RUN_TIME_ARGUMENTS "$RUN_TIME_ARGUMENTS" \
-#                                                                                                        '{
-#                                                                                                            "arguments" :
-#                                                                                                                {
-#                                                                                                                    "compile" : $COMPILE_TIME_ARGUMENTS ,
-#                                                                                                                    "run" : $RUN_TIME_ARGUMENTS
-#                                                                                                                } ,
-#                                                                                                            "inputs" : { }
-#                                                                                                        }' > "$OUT/expected/standard-error"
-#                                                                                                    echo -n "" > "$OUT/expected/standard-output"
-#                                                                                                    echo -n ${ builtins.toString } > "$OUT/expected/status"
-#                                                                                                    mkdir --parents "$OUT/observed"
-#                                                                                                    exec 0<&-
-#                                                                                                    if failure ${ builtins.concatStringsSep " " run-time-arguments } > "$OUT/observed/standard-output" 2> "$OUT/observed/standard-error"
-#                                                                                                    then
-#                                                                                                        echo -n "$?" > "$OUT/observed/status"
-#                                                                                                    else
-#                                                                                                        echo -n "$?" > "$OUT/observed/status"
-#                                                                                                    fi
-#                                                                                                    diff --unified "$OUT/expected" "$OUT/observed"
-#                                                                                                '' ;
+                                                                                            text =
+                                                                                                ''
+                                                                                                    mkdir --parents /build/expected
+                                                                                                    cat ${ standard-output } > /build/expected/standard-output
+                                                                                                    cat ${ standard-error } > /build/expected/standard-error
+                                                                                                    echo ${ builtins.toString status } > /build/expected/status
+                                                                                                    mkdir --parents /build/observed
+                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                    then
+                                                                                                        echo "$?" > /build/observed/status
+                                                                                                    else
+                                                                                                        echo "$?" > /build/observed/status
+                                                                                                    fi
+                                                                                                    diff --recursive --unified /build/expected /build/observed
+                                                                                                '' ;
                                                                                         }
                                                                                 )
                                                                             ] ;
-                                                                        imports = [ failure ] ;
+                                                                        imports = [ implementation ] ;
                                                                     } ;
                                                             testScript =
                                                                 ''
-                                                                    client.wait_for_unit("network-online.target")
+                                                                    client.wait_for_unit(""multi-user.target"")
                                                                     client.succeed("test-script")
                                                                 '' ;
                                                         } ;
-#                                                test =
-#                                                    let
-#                                                        test-script =
-#                                                            writeShellApplication
-#                                                                {
-#                                                                    name = "test-script" ;
-#                                                                    runtimeInputs = [ check-parameters.coreutils check-parameters.findutils ( config.failure { } ) ] ;
-#                                                                    text =
-#                                                                        ''
-#                                                                            mkdir --parents /tmp/expected
-#                                                                            ln --symbolic ${ check-parameters.standard-error } /tmp/expected/standard-error
-#                                                                            ln --symbolic ${ check-parameters.standard-output } /tmp/expected/standard-output
-#                                                                            echo -n ${ check-parameters.status } > /tmp/expected/status
-#                                                                            mkdir --parents /tmp/observed
-#                                                                            exec 0<&-
-#                                                                            if ${ implementation { name = check-parameters.name ; mounts = check-parameters.mounts ; post = null ; runtime-inputs = check-parameters.runtime-inputs ; text = check-parameters.text ; } }/bin/${ check-parameters.name } ${ builtins.concatStringsSep " " check-parameters.arguments } ${ if builtins.typeOf check-parameters.standard-input == "null" then "" else "< ${ check-parameters.standard-input }" } > /tmp/observed/standard-output 2> /tmp/observed/standard-error
-#                                                                            then
-#                                                                                echo -n "$?" > /tmp/observed/status
-#                                                                            else
-#                                                                                echo -n "$?" > /tmp/observed/status
-#                                                                            fi
-#                                                                            if ! diff --recursive --unified /tmp/expected /tmp/observed
-#                                                                            then
-#                                                                                if true ; then echo 1723258852938545 1753772616956527 >&2 && exit 104 ; fi
-#                                                                                failure 1145694589525674
-#                                                                            fi
-#                                                                        '' ;
-#                                                                } ;
-#                                                        in ''${ check-parameters.client }.succeed("${ test-script }/bin/test-script")'' ;
                                                 in
                                                     {
-                                                        name = builtins.concatStringsSep "-" [ "check" ( builtins.toString order ) ] ;
-                                                        order = order ;
-                                                        value = dependencies : nixos-test ;
+                                                        obviated-by = obviated-by ;
+                                                        test = test ;
+                                                        type = "lazy-shell-application" ;
                                                     } ;
                                     implementation = implementation ;
                                 } ;
