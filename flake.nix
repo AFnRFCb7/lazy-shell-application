@@ -97,6 +97,7 @@
                                                                                                                     mapfile -t ARGUMENTS < <(
                                                                                                                         jq --raw-output '.arguments[]' /input.json
                                                                                                                     )
+                                                                                                                    echo 2640654841145115 >&2
                                                                                                                     if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
                                                                                                                     then
                                                                                                                         STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
