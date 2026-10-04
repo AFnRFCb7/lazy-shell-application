@@ -248,6 +248,7 @@
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
+                                                                                                                    echo "name = ${ name }"
                                                                                                                     cat "$( which ${ name } )"
                                                                                                                     mkdir --parents /build/expected
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
