@@ -179,14 +179,14 @@
                                                                                                                         {
                                                                                                                             "standard" : $STANDARD_INPUT
                                                                                                                         }
-                                                                                                                }' -- "$@" > "$INPUT"
+                                                                                                                }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
                                                                                                             jq \
                                                                                                                 --null-input \
                                                                                                                 --args \
                                                                                                                 '{
                                                                                                                     "arguments" : $ARGS.positional
-                                                                                                                }' -- "$@" > "$INPUT"
+                                                                                                                }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         echo 2986886668106380 >&2
                                                                                                         user-environment
