@@ -106,11 +106,9 @@
                                                                                                                     name = "user-environment" ;
                                                                                                                     runScript =
                                                                                                                         ''
-                                                                                                                            echo 7095515695706928 >&2
                                                                                                                             mapfile -t ARGUMENTS < <(
                                                                                                                                 jq --raw-output '.arguments[]' /input.json
                                                                                                                             )
-                                                                                                                            echo 2640654841145115 >&2
                                                                                                                             if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
                                                                                                                             then
                                                                                                                                 STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
@@ -159,13 +157,11 @@
                                                                                                     ] ;
                                                                                                 text =
                                                                                                     ''
-                                                                                                        echo 2183182519301478 >&2
                                                                                                         INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
                                                                                                         trap cleanup EXIT
-                                                                                                        echo 0672846801283527
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
@@ -188,9 +184,7 @@
                                                                                                                     "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
-                                                                                                        echo 2986886668106380 >&2
                                                                                                         user-environment
-                                                                                                        echo 9199693025957222 >&2
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
