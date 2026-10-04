@@ -146,6 +146,7 @@
                                                                                             ] ;
                                                                                         text =
                                                                                             ''
+                                                                                                echo 2183182519301478 >&2
                                                                                                 INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
                                                                                                 export INPUT_FILE
                                                                                                 OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
