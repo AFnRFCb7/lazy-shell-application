@@ -243,10 +243,11 @@
                                                                                                                     mkdir --parents /build/observed
                                                                                                                     if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
-                                                                                                                        echo "$?" > /build/observed/status
+                                                                                                                        STATUS="$?"
                                                                                                                     else
-                                                                                                                        echo "$?" > /build/observed/status
+                                                                                                                        STATUS="$?"
                                                                                                                     fi
+                                                                                                                    echo "$STATUS" > /build/observed/status
                                                                                                                     diff --recursive --unified /build/expected /build/observed
                                                                                                                 '' ;
                                                                                                         }
