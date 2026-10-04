@@ -111,9 +111,9 @@
                                                                                                                             mapfile -t ARGUMENTS < <(
                                                                                                                                 jq --raw-output '.arguments[]' /input
                                                                                                                             )
-                                                                                                                            if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
+                                                                                                                            if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input > /private/exit-status
                                                                                                                             then
-                                                                                                                                STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
+                                                                                                                                STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input )" || failure 7828132754944749
                                                                                                                                 if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
                                                                                                                                 then
                                                                                                                                     STATUS="$?"
