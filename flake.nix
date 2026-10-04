@@ -241,10 +241,13 @@
                                                                                                                     cat ${ standard-error } > /build/expected/standard-error
                                                                                                                     echo ${ builtins.toString status } > /build/expected/status
                                                                                                                     mkdir --parents /build/observed
+                                                                                                                    # shellcheck disable=SC2065
                                                                                                                     if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
+                                                                                                                        # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
                                                                                                                     else
+                                                                                                                        # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
                                                                                                                     fi
                                                                                                                     echo "$STATUS" > /build/observed/status
