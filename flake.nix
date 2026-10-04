@@ -6,6 +6,7 @@
                 lib =
                     {
                         config-identity ? x : x ,
+                        lib-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x
                     } :
