@@ -19,7 +19,6 @@
                                         _pkgs = pkgs-identity pkgs ;
                                         in
                                             {
-                                                imports = [ failure visitor ] ;
                                                 options =
                                                     options-identity
                                                         {
@@ -190,7 +189,8 @@
                                         {
                                             failure ,
                                             nixosTest ,
-                                            obviated-by
+                                            obviated-by ,
+                                            visitor
                                         } :
                                         {
                                             mounts ,
@@ -218,36 +218,39 @@
                                                                         _pkgs = pkgs-identity pkgs ;
                                                                         in
                                                                             {
-                                                                                environment.systemPackages =
-                                                                                    [
-                                                                                        (
-                                                                                            _pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "test-script" ;
-                                                                                                    runtimeInputs =
-                                                                                                        [
-                                                                                                            _pkgs.coreutils
-                                                                                                            _pkgs.diffutils
-                                                                                                            ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
-                                                                                                        ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            mkdir --parents /build/expected
-                                                                                                            cat ${ standard-output } > /build/expected/standard-output
-                                                                                                            cat ${ standard-error } > /build/expected/standard-error
-                                                                                                            echo ${ builtins.toString status } > /build/expected/status
-                                                                                                            mkdir --parents /build/observed
-                                                                                                            if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
-                                                                                                            then
-                                                                                                                echo "$?" > /build/observed/status
-                                                                                                            else
-                                                                                                                echo "$?" > /build/observed/status
-                                                                                                            fi
-                                                                                                            diff --recursive --unified /build/expected /build/observed
-                                                                                                        '' ;
-                                                                                                }
-                                                                                        )
-                                                                                    ] ;
+                                                                                config =
+                                                                                    {
+                                                                                        environment.systemPackages =
+                                                                                            [
+                                                                                                (
+                                                                                                    _pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "test-script" ;
+                                                                                                            runtimeInputs =
+                                                                                                                [
+                                                                                                                    _pkgs.coreutils
+                                                                                                                    _pkgs.diffutils
+                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                                ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    mkdir --parents /build/expected
+                                                                                                                    cat ${ standard-output } > /build/expected/standard-output
+                                                                                                                    cat ${ standard-error } > /build/expected/standard-error
+                                                                                                                    echo ${ builtins.toString status } > /build/expected/status
+                                                                                                                    mkdir --parents /build/observed
+                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                    then
+                                                                                                                        echo "$?" > /build/observed/status
+                                                                                                                    else
+                                                                                                                        echo "$?" > /build/observed/status
+                                                                                                                    fi
+                                                                                                                    diff --recursive --unified /build/expected /build/observed
+                                                                                                                '' ;
+                                                                                                        }
+                                                                                                )
+                                                                                            ] ;
+                                                                                    } ;
                                                                                 imports = [ failure implementation ] ;
                                                                             } ;
                                                             testScript =
