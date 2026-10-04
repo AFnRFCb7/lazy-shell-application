@@ -249,6 +249,10 @@
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     echo "name = ${ name }"
+                                                                                                                    type -a ${ name }
+                                                                                                                    which ${ name }
+                                                                                                                    readlink -f "$( which ${ name } )"
+                                                                                                                    file "$( which ${ name } )"
                                                                                                                     cat "$( which ${ name } )"
                                                                                                                     mkdir --parents /build/expected
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
