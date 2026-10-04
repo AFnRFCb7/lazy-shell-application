@@ -187,6 +187,9 @@
                                 {
                                     check =
                                         {
+                                            nixosTest
+                                        } :
+                                        {
                                             mounts ,
                                             name ,
                                             runtime-inputs ,
@@ -201,7 +204,7 @@
                                         } :
                                             let
                                                 test =
-                                                    _pkgs.nixosTest
+                                                    nixosTest
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
