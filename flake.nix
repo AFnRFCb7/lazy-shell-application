@@ -202,8 +202,6 @@
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
                                                                                                         echo -n "$STANDARD_OUTPUT"
                                                                                                         STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
-                                                                                                        echo 9711412476716616
-                                                                                                        echo 9711412476716616 >&2
                                                                                                         exit "$STATUS"
                                                                                                     '' ;
                                                                                             } ;
