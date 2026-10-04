@@ -19,6 +19,7 @@
                                         _pkgs = pkgs-identity pkgs ;
                                         in
                                             {
+                                                imports = [ failure visitor ] ;
                                                 options =
                                                     options-identity
                                                         {
