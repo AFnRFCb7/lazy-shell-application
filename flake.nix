@@ -243,10 +243,12 @@
                                                                                                                 [
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
+                                                                                                                    _pkgs.which
                                                                                                                     ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = builtins.trace text text ; } )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
+                                                                                                                    cat "$( which ${ name } )"
                                                                                                                     mkdir --parents /build/expected
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
