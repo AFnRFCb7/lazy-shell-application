@@ -192,6 +192,7 @@
                                             failure ,
                                             nixosTest ,
                                             obviated-by ,
+                                            test-setup ,
                                             visitor
                                         } :
                                         {
@@ -227,6 +228,14 @@
                                                                                                 (
                                                                                                     _pkgs.writeShellApplication
                                                                                                         {
+                                                                                                            name = "test-setup" ;
+                                                                                                            runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                            text = test-setup ;
+                                                                                                        }
+                                                                                                )
+                                                                                                (
+                                                                                                    _pkgs.writeShellApplication
+                                                                                                        {
                                                                                                             name = "test-script" ;
                                                                                                             runtimeInputs =
                                                                                                                 [
@@ -237,12 +246,13 @@
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     mkdir --parents /build/expected
-                                                                                                                    cat ${ standard-output } > /build/expected/standard-output
-                                                                                                                    cat ${ standard-error } > /build/expected/standard-error
+                                                                                                                    ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
+                                                                                                                    ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
                                                                                                                     echo ${ builtins.toString status } > /build/expected/status
                                                                                                                     mkdir --parents /build/observed
+                                                                                                                    exec 0<&-
                                                                                                                     # shellcheck disable=SC2065
-                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
                                                                                                                         # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
@@ -262,6 +272,7 @@
                                                             testScript =
                                                                 ''
                                                                     client.wait_for_unit("multi-user.target")
+                                                                    client.succeed("test-setup")
                                                                     client.succeed("test-script")
                                                                 '' ;
                                                         } ;
