@@ -221,6 +221,7 @@
                                             visitor
                                         } :
                                         {
+                                            marshall ,
                                             mounts ,
                                             name ,
                                             post ,
@@ -267,7 +268,7 @@
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
                                                                                                                     _pkgs.which
-                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                                    ( _config.lazy-shell-application { marshall = marshall ; mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
