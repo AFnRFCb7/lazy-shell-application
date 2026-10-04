@@ -193,6 +193,7 @@
                                         {
                                             mounts ,
                                             name ,
+                                            post ,
                                             runtime-inputs ,
                                             text
                                         } :
@@ -225,7 +226,7 @@
                                                                                                         [
                                                                                                             _pkgs.coreutils
                                                                                                             _pkgs.diffutils
-                                                                                                            ( _config.lazy-shell-application { mounts = mounts ; name = name ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                            ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                         ] ;
                                                                                                     text =
                                                                                                         ''
