@@ -44,7 +44,7 @@
                                                                                                     _pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "cleanup" ;
-                                                                                                            runtimeInputs = [ coreutils ] ;
+                                                                                                            runtimeInputs = [ _pkgs.coreutils ] ;
                                                                                                             text =
                                                                                                                 config.visitor
                                                                                                                     { }
