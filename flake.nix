@@ -130,7 +130,6 @@
                                                                                                                                                 ] ;
                                                                                                                                             text =
                                                                                                                                                 ''
-                                                                                                                                                    cat /input >&2
                                                                                                                                                     mapfile -t ARGUMENTS < <(
                                                                                                                                                         jq --raw-output '.arguments[]' /input
                                                                                                                                                     )
