@@ -241,7 +241,7 @@
                                                                                                                 [
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
-                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = builtins.trace text text ; } )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
