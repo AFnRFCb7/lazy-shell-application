@@ -199,14 +199,8 @@
                                                                                                         user-environment
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
-                                                                                                        echo 1402143718468917
-                                                                                                        echo 1402143718468917 >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
-                                                                                                        echo 2585819656769966
-                                                                                                        echo 2585819656769966 >&2
                                                                                                         echo -n "$STANDARD_OUTPUT"
-                                                                                                        echo 4118726294763377
-                                                                                                        echo 4118726294763377 >&2
                                                                                                         STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
                                                                                                         echo 9711412476716616
                                                                                                         echo 9711412476716616 >&2
