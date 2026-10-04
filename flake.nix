@@ -109,7 +109,7 @@
                                                                                                                     runScript =
                                                                                                                         ''
                                                                                                                             mapfile -t ARGUMENTS < <(
-                                                                                                                                jq --raw-output '.arguments[]' /input.json
+                                                                                                                                jq --raw-output '.arguments[]' /input
                                                                                                                             )
                                                                                                                             if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
                                                                                                                             then
@@ -137,7 +137,7 @@
                                                                                                                                     "standard-error" : $STANDARD_ERROR ,
                                                                                                                                     "standard-output" : $STANDARD_OUTPUT ,
                                                                                                                                     "status" : $STATUS
-                                                                                                                                }' > /output.json
+                                                                                                                                }' > /output
                                                                                                                         '' ;
                                                                                                                     targetPkgs =
                                                                                                                         pkgs :
