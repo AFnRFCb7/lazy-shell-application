@@ -106,52 +106,62 @@
                                                                                                                                 ]
                                                                                                                             ] ;
                                                                                                                     name = "user-environment" ;
-                                                                                                                    runScript =
-                                                                                                                        ''
-                                                                                                                            cat /input >&2
-                                                                                                                            mapfile -t ARGUMENTS < <(
-                                                                                                                                jq --raw-output '.arguments[]' /input
-                                                                                                                            )
-                                                                                                                            if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input > /private/exit-status
-                                                                                                                            then
-                                                                                                                                STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input )" || failure 7828132754944749
-                                                                                                                                if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
-                                                                                                                                then
-                                                                                                                                    STATUS="$?"
-                                                                                                                                else
-                                                                                                                                    STATUS="$?"
-                                                                                                                                fi
-                                                                                                                            else
-                                                                                                                                if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
-                                                                                                                                then
-                                                                                                                                    STATUS="$?"
-                                                                                                                                else
-                                                                                                                                    STATUS="$?"
-                                                                                                                                fi
-                                                                                                                            fi
-                                                                                                                            jq \
-                                                                                                                                --null-input \
-                                                                                                                                --rawfile STANDARD_ERROR /private/standard-error \
-                                                                                                                                --rawfile STANDARD_OUTPUT /private/standard-output \
-                                                                                                                                --argjson STATUS "$STATUS" \
-                                                                                                                                '{
-                                                                                                                                    "standard-error" : $STANDARD_ERROR ,
-                                                                                                                                    "standard-output" : $STANDARD_OUTPUT ,
-                                                                                                                                    "status" : $STATUS
-                                                                                                                                }' > /output
-                                                                                                                        '' ;
+                                                                                                                    runScript = "script" ;
                                                                                                                     targetPkgs =
                                                                                                                         pkgs :
                                                                                                                             [
-                                                                                                                                ( _config.failure { } )
-                                                                                                                                pkgs.coreutils
-                                                                                                                                pkgs.jq
                                                                                                                                 (
                                                                                                                                     pkgs.writeShellApplication
                                                                                                                                         {
                                                                                                                                             name = "application" ;
                                                                                                                                             runtimeInputs = runtime-inputs pkgs ;
                                                                                                                                             text = text ;
+                                                                                                                                        }
+                                                                                                                                )
+                                                                                                                                (
+                                                                                                                                    pkgs.writeShellApplication
+                                                                                                                                        {
+                                                                                                                                            name = "script" ;
+                                                                                                                                            runtimeInputs =
+                                                                                                                                                [
+                                                                                                                                                    ( _config.failure { } )
+                                                                                                                                                    pkgs.coreutils
+                                                                                                                                                    pkgs.jq
+                                                                                                                                                ] ;
+                                                                                                                                            text =
+                                                                                                                                                ''
+                                                                                                                                                    cat /input >&2
+                                                                                                                                                    mapfile -t ARGUMENTS < <(
+                                                                                                                                                        jq --raw-output '.arguments[]' /input
+                                                                                                                                                    )
+                                                                                                                                                    if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input > /private/exit-status
+                                                                                                                                                    then
+                                                                                                                                                        STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input )" || failure 7828132754944749
+                                                                                                                                                        if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
+                                                                                                                                                        then
+                                                                                                                                                            STATUS="$?"
+                                                                                                                                                        else
+                                                                                                                                                            STATUS="$?"
+                                                                                                                                                        fi
+                                                                                                                                                    else
+                                                                                                                                                        if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
+                                                                                                                                                        then
+                                                                                                                                                            STATUS="$?"
+                                                                                                                                                        else
+                                                                                                                                                            STATUS="$?"
+                                                                                                                                                        fi
+                                                                                                                                                    fi
+                                                                                                                                                    jq \
+                                                                                                                                                        --null-input \
+                                                                                                                                                        --rawfile STANDARD_ERROR /private/standard-error \
+                                                                                                                                                        --rawfile STANDARD_OUTPUT /private/standard-output \
+                                                                                                                                                        --argjson STATUS "$STATUS" \
+                                                                                                                                                        '{
+                                                                                                                                                            "standard-error" : $STANDARD_ERROR ,
+                                                                                                                                                            "standard-output" : $STANDARD_OUTPUT ,
+                                                                                                                                                            "status" : $STATUS
+                                                                                                                                                        }' > /output
+                                                                                                                                                '' ;
                                                                                                                                         }
                                                                                                                                 )
                                                                                                                             ] ;
