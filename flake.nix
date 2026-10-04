@@ -8,7 +8,8 @@
                         config-identity ? x : x ,
                         lib-identity ? x : x ,
                         options-identity ? x : x ,
-                        pkgs-identity ? x : x
+                        pkgs-identity ? x : x ,
+                        visitor
                     } :
                         let
                             implementation =
@@ -19,6 +20,7 @@
                                         _pkgs = pkgs-identity pkgs ;
                                         in
                                             {
+                                                imports [ visitor ] ;
                                                 options =
                                                     options-identity
                                                         {
