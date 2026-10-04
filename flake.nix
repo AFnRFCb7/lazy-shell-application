@@ -54,6 +54,7 @@
                                                                                                     [
                                                                                                         ( _config.failure { } )
                                                                                                         _pkgs.coreutils
+                                                                                                        _pkgs.jq
                                                                                                         (
                                                                                                             _pkgs.writeShellApplication
                                                                                                                 {
