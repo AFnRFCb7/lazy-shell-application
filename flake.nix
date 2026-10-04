@@ -20,7 +20,7 @@
                                         _pkgs = pkgs-identity pkgs ;
                                         in
                                             {
-                                                imports [ visitor ] ;
+                                                imports = [ visitor ] ;
                                                 options =
                                                     options-identity
                                                         {
