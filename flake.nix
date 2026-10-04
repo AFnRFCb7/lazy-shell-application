@@ -200,47 +200,49 @@
                                             status ? 0
                                         } :
                                             let
-                                                _config = config-identity config ;
-                                                _pkgs = pkgs-identity pkgs ;
                                                 test =
                                                     _pkgs.nixosTest
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
-                                                                { config , pkgs , ... }  :
-                                                                    {
-                                                                        environment.systemPackages =
-                                                                            [
-                                                                                (
-                                                                                    _pkgs.writeShellApplication
-                                                                                        {
-                                                                                            name = "test-script" ;
-                                                                                            runtimeInputs =
-                                                                                                [
-                                                                                                    _pkgs.coreutils
-                                                                                                    _pkgs.diffutils
-                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; runtime-inputs = runtime-inputs ; text = text ; } )
-                                                                                                ] ;
-                                                                                            text =
-                                                                                                ''
-                                                                                                    mkdir --parents /build/expected
-                                                                                                    cat ${ standard-output } > /build/expected/standard-output
-                                                                                                    cat ${ standard-error } > /build/expected/standard-error
-                                                                                                    echo ${ builtins.toString status } > /build/expected/status
-                                                                                                    mkdir --parents /build/observed
-                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
-                                                                                                    then
-                                                                                                        echo "$?" > /build/observed/status
-                                                                                                    else
-                                                                                                        echo "$?" > /build/observed/status
-                                                                                                    fi
-                                                                                                    diff --recursive --unified /build/expected /build/observed
-                                                                                                '' ;
-                                                                                        }
-                                                                                )
-                                                                            ] ;
-                                                                        imports = [ implementation ] ;
-                                                                    } ;
+                                                                { config , pkgs , ... } :
+                                                                    let
+                                                                        _config = config-identity config ;
+                                                                        _pkgs = pkgs-identity pkgs ;
+                                                                        in
+                                                                            {
+                                                                                environment.systemPackages =
+                                                                                    [
+                                                                                        (
+                                                                                            _pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "test-script" ;
+                                                                                                    runtimeInputs =
+                                                                                                        [
+                                                                                                            _pkgs.coreutils
+                                                                                                            _pkgs.diffutils
+                                                                                                            ( _config.lazy-shell-application { mounts = mounts ; name = name ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                        ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            mkdir --parents /build/expected
+                                                                                                            cat ${ standard-output } > /build/expected/standard-output
+                                                                                                            cat ${ standard-error } > /build/expected/standard-error
+                                                                                                            echo ${ builtins.toString status } > /build/expected/status
+                                                                                                            mkdir --parents /build/observed
+                                                                                                            if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                            then
+                                                                                                                echo "$?" > /build/observed/status
+                                                                                                            else
+                                                                                                                echo "$?" > /build/observed/status
+                                                                                                            fi
+                                                                                                            diff --recursive --unified /build/expected /build/observed
+                                                                                                        '' ;
+                                                                                                }
+                                                                                        )
+                                                                                    ] ;
+                                                                                imports = [ implementation ] ;
+                                                                            } ;
                                                             testScript =
                                                                 ''
                                                                     client.wait_for_unit(""multi-user.target"")
