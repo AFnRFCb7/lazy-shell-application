@@ -172,13 +172,22 @@
                                                                                                         export INPUT_FILE
                                                                                                         echo 4236891431996996 >&2
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
-                                                                                                        echo 4236891431996996 >&2
+                                                                                                        echo 7246061161181239 >&2
                                                                                                         export OUTPUT_FILE
                                                                                                         echo 1086111568674874 >&2
                                                                                                         trap cleanup EXIT
                                                                                                         echo 4074370345326046 >&2
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
+                                                                                                            echo 9505791712643094 >&2
+                                                                                                            jq \
+                                                                                                                --null-input \
+                                                                                                                --args \
+                                                                                                                '{
+                                                                                                                    "arguments" : $ARGS.positional
+                                                                                                                }' -- "$@" > "$INPUT_FILE"
+                                                                                                                echo 9294799679690769 >&2
+                                                                                                        else
                                                                                                             echo 8516571609862123 >&2
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
@@ -192,20 +201,12 @@
                                                                                                                             "standard" : $STANDARD_INPUT
                                                                                                                         }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
-                                                                                                        else
-                                                                                                            echo 9505791712643094 >&2
-                                                                                                            jq \
-                                                                                                                --null-input \
-                                                                                                                --args \
-                                                                                                                '{
-                                                                                                                    "arguments" : $ARGS.positional
-                                                                                                                }' -- "$@" > "$INPUT_FILE"
-                                                                                                                echov 9294799679690769 >&2
                                                                                                         fi
                                                                                                         echo 8814120711658149 >&2
                                                                                                         user-environment
                                                                                                         echo 3921808514081887 >&2
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
+                                                                                                        echo 7246061161181239 >&2
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
                                                                                                         echo -n "$STANDARD_OUTPUT"
