@@ -168,6 +168,7 @@
                                                                                                     ''
                                                                                                         echo 3355068903013863 >&2
                                                                                                         INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
+                                                                                                        echo
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
