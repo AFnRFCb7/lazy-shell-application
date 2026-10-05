@@ -27,7 +27,6 @@
                                                                     {
                                                                         default =
                                                                             {
-                                                                                marshall ? true ,
                                                                                 mounts ,
                                                                                 name ,
                                                                                 post ,
@@ -167,6 +166,7 @@
                                                                                                     ] ;
                                                                                                 text =
                                                                                                     ''
+                                                                                                        echo 3355068903013863 >&2
                                                                                                         INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
@@ -218,7 +218,6 @@
                                             visitor
                                         } :
                                         {
-                                            marshall ,
                                             mounts ,
                                             name ,
                                             post ,
@@ -265,7 +264,7 @@
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
                                                                                                                     _pkgs.which
-                                                                                                                    ( _config.lazy-shell-application { marshall = marshall ; mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
