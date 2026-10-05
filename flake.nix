@@ -174,7 +174,9 @@
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         echo 4236891431996996 >&2
                                                                                                         export OUTPUT_FILE
+                                                                                                        echo 1086111568674874 >&2
                                                                                                         trap cleanup EXIT
+                                                                                                        echo 4074370345326046 >&2
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
@@ -190,6 +192,7 @@
                                                                                                                         }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
+                                                                                                            echo 9505791712643094 >&2
                                                                                                             jq \
                                                                                                                 --null-input \
                                                                                                                 --args \
