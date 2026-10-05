@@ -168,9 +168,11 @@
                                                                                                     ''
                                                                                                         echo 3355068903013863 >&2
                                                                                                         INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
-                                                                                                        echo
+                                                                                                        echo 1073385503084080 >&2
                                                                                                         export INPUT_FILE
+                                                                                                        echo 4236891431996996 >&2
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
+                                                                                                        echo 4236891431996996 >&2
                                                                                                         export OUTPUT_FILE
                                                                                                         trap cleanup EXIT
                                                                                                         if [[ -t 0 ]]
