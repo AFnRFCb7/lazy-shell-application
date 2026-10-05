@@ -179,6 +179,7 @@
                                                                                                         echo 4074370345326046 >&2
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
+                                                                                                            echo 8516571609862123 >&2
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
                                                                                                                 --null-input \
@@ -199,8 +200,11 @@
                                                                                                                 '{
                                                                                                                     "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
+                                                                                                                echov 9294799679690769 >&2
                                                                                                         fi
+                                                                                                        echo 8814120711658149 >&2
                                                                                                         user-environment
+                                                                                                        echo 3921808514081887 >&2
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
