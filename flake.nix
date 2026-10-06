@@ -66,16 +66,14 @@
                                                                                                                                     path : value :
                                                                                                                                         ''
                                                                                                                                             rm --force "$INPUT_FILE" "$OUTPUT_FILE"
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''# shellcheck disable=SC2154'' ''rm --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                         '' ;
                                                                                                                                 string =
                                                                                                                                     path : value :
                                                                                                                                         ''
                                                                                                                                             nohup nice --adjustment 19 "${ value }"
                                                                                                                                             rm --force "$INPUT_FILE" "$OUTPUT_FILE"
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''# shellcheck disable=SC2154'' ''rm --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                        '' ;
                                                                                                                             }
                                                                                                                             post ;
@@ -89,6 +87,10 @@
                                                                                                                             [
                                                                                                                                 [
                                                                                                                                     "--ro-bind" "$INPUT_FILE" "/input"
+                                                                                                                                    "--tmpfs" "/mounts"
+                                                                                                                                    "--remount-ro" "/mounts"
+                                                                                                                                    "--bind" "$OUTPUT_FILE" "/output"
+                                                                                                                                    "--tmpfs" "/private"
                                                                                                                                 ]
                                                                                                                                 (
                                                                                                                                     let
@@ -105,10 +107,6 @@
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
-                                                                                                                                [
-                                                                                                                                    "--bind" "$OUTPUT_FILE" "/output"
-                                                                                                                                    "--tmpfs" "/private"
-                                                                                                                                ]
                                                                                                                             ] ;
                                                                                                                     name = "user-environment" ;
                                                                                                                     runScript = "script" ;
