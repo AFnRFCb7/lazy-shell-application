@@ -134,11 +134,14 @@
                                                                                                                                                 ] ;
                                                                                                                                             text =
                                                                                                                                                 ''
-                                                                                                                                                    find /memory -mindepth 1 -maxdepth 1 -type d | while read -r DIRECTORY
-                                                                                                                                                    do
-                                                                                                                                                        BASENAME="$( basename "$DIRECTORY" )" || failure 9613707705785031
-                                                                                                                                                        ln --symbolic "$DIRECTORY/$BASENAME" "/mounts/$BASENAME"
-                                                                                                                                                    done
+                                                                                                                                                    if [[ -d /memory ]]
+                                                                                                                                                    then
+                                                                                                                                                        find /memory -mindepth 1 -maxdepth 1 -type d | while read -r DIRECTORY
+                                                                                                                                                        do
+                                                                                                                                                            BASENAME="$( basename "$DIRECTORY" )" || failure 9613707705785031
+                                                                                                                                                            ln --symbolic "$DIRECTORY/$BASENAME" "/mounts/$BASENAME"
+                                                                                                                                                        done
+                                                                                                                                                    fi
                                                                                                                                                     mapfile -t ARGUMENTS < <(
                                                                                                                                                         jq --raw-output '.arguments[]' /input
                                                                                                                                                     )
