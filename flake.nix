@@ -93,7 +93,7 @@
                                                                                                                                                 if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
-                                                                                                                                                # else if type == "temporary-file" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                                else if type == "temporary-file" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
@@ -171,6 +171,7 @@
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
+                                                                                                        ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }=$( mktemp --directory )" || failure 2348666420719031 ${ name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }=$( mktemp )" || failure 2348666420719031 ${ name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXITextraBwrap
                                                                                                         if [[ -t 0 ]]
