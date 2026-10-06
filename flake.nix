@@ -171,8 +171,8 @@
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
-                                                                                                        ${ builtins.concatStringsSep "/" ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }=$( mktemp )" || failure 2348666420719031 ${ name }'' ] else [ ] ) mounts ) ) }
-                                                                                                        trap cleanup EXIT
+                                                                                                        ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }=$( mktemp )" || failure 2348666420719031 ${ name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                        trap cleanup EXITextraBwrap
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
                                                                                                             jq \
