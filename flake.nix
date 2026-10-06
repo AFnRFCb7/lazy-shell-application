@@ -93,19 +93,21 @@
                                                                                                                                 (
                                                                                                                                     let
                                                                                                                                         mapper =
-                                                                                                                                            name : { source ? null , type } :
-                                                                                                                                                if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
-                                                                                                                                                else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
-                                                                                                                                                else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
-                                                                                                                                                else if type == "temporary-directory" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
-                                                                                                                                                else if type == "temporary-file" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                            name : { directory ? true , read-only ? false , source ? null , type } :
+                                                                                                                                                if type == "bind" && read-only then [ "--ro-bind" source "/mounts/${ name }" ]
+                                                                                                                                                else if type == "bind" && ! read-only then [ "--bind" source "/mounts/${ name }" ]
+                                                                                                                                                else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                                else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                                else if type == "memory" && read-only && directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
+                                                                                                                                                else if type == "memory" && read-only && ! directory then builtins.throw "memory and read-only and ! directory makes no sense "
+                                                                                                                                                else if type == "memory" && ! read-only && directory then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                                                                else if type == "memory" && ! read-only && ! directory then [ "--tmpfs" "/memory/${ name }" ]
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                                 [
                                                                                                                                     "--bind" "$OUTPUT_FILE" "/output"
                                                                                                                                     "--tmpfs" "/private"
-                                                                                                                                    "--tmpfs" "/temporary"
                                                                                                                                 ]
                                                                                                                             ] ;
                                                                                                                     name = "user-environment" ;
@@ -129,10 +131,16 @@
                                                                                                                                                 [
                                                                                                                                                     ( _config.failure { } )
                                                                                                                                                     pkgs.coreutils
+                                                                                                                                                    pkgs.findutils
                                                                                                                                                     pkgs.jq
                                                                                                                                                 ] ;
                                                                                                                                             text =
                                                                                                                                                 ''
+                                                                                                                                                    find /memory -mindepth 1 -maxdepth 1 -type d | while read DIRECTORY
+                                                                                                                                                    do
+                                                                                                                                                        BASENAME="$( basename "$DIRECTORY" )" || failure 9613707705785031
+                                                                                                                                                        ln --symbolic "$DIRECTORY/$BASENAME" "/mounts/$BASENAME"
+                                                                                                                                                    done
                                                                                                                                                     mapfile -t ARGUMENTS < <(
                                                                                                                                                         jq --raw-output '.arguments[]' /input
                                                                                                                                                     )
@@ -176,8 +184,8 @@
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
-                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --directory )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
-                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type } : if type == "temporary" && is-directory then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --directory )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type } : if type == "temporary" && ! is-directory then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXIT
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
