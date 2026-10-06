@@ -65,6 +65,8 @@
                                                                                                                                 null =
                                                                                                                                     path : value :
                                                                                                                                         ''
+                                                                                                                                            ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                            ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''rm --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                             rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                         '' ;
                                                                                                                                 string =
@@ -93,6 +95,7 @@
                                                                                                                                                 if type == "bind" then [ "--bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "ro-bind" then [ "--ro-bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "tmp" then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                                                                else if type == "temporary-directory" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary-file" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
