@@ -70,8 +70,8 @@
                                                                                                                                 string =
                                                                                                                                     path : value :
                                                                                                                                         ''
-                                                                                                                                            rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                             nohup nice --adjustment 19 "${ value }"
+                                                                                                                                            rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                         '' ;
                                                                                                                             }
                                                                                                                             post ;
