@@ -65,9 +65,9 @@
                                                                                                                                 null =
                                                                                                                                     path : value :
                                                                                                                                         ''
+                                                                                                                                            rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                             ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-directory" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                             ${ builtins.concatStringsSep "/" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''rm --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
-                                                                                                                                            rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                         '' ;
                                                                                                                                 string =
                                                                                                                                     path : value :
@@ -173,7 +173,7 @@
                                                                                                         INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
-                                                                                                        export OUTPUT_FILE
+                                                                                                        # export OUTPUT_FILE
                                                                                                         ${ let x = builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if true then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --directory )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) ; in builtins.trace x x }
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type } : if type == "temporary-file" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXIT
