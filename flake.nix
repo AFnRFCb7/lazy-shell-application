@@ -187,17 +187,8 @@
                                                                                                         trap cleanup EXIT
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
-                                                                                                            echo 7904686139471283
-                                                                                                            jq \
-                                                                                                                --null-input \
-                                                                                                                --args \
-                                                                                                                '{
-                                                                                                                    "arguments" : $ARGS.positional
-                                                                                                                }' -- "$@" > "$INPUT_FILE"
-                                                                                                        else
                                                                                                             echo 3874783657122109
-                                                                                                            # STANDARD_INPUT="$( cat )" || failure 6712938899436674
-                                                                                                            STANDARD_INPUT=5317243833560952
+                                                                                                            STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
                                                                                                                 --null-input \
                                                                                                                 --arg STANDARD_INPUT "$STANDARD_INPUT" \
@@ -208,6 +199,14 @@
                                                                                                                         {
                                                                                                                             "standard" : $STANDARD_INPUT
                                                                                                                         }
+                                                                                                                }' -- "$@" > "$INPUT_FILE"
+                                                                                                        else
+                                                                                                            echo 7904686139471283
+                                                                                                            jq \
+                                                                                                                --null-input \
+                                                                                                                --args \
+                                                                                                                '{
+                                                                                                                    "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
