@@ -194,7 +194,8 @@
                                                                                                                     "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
-                                                                                                            STANDARD_INPUT="$( cat )" || failure 6712938899436674
+                                                                                                            # STANDARD_INPUT="$( cat )" || failure 6712938899436674
+                                                                                                            STANDARD_INPUT=5317243833560952
                                                                                                             jq \
                                                                                                                 --null-input \
                                                                                                                 --arg STANDARD_INPUT "$STANDARD_INPUT" \
