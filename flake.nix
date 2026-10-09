@@ -87,8 +87,6 @@
                                                                                                                             [
                                                                                                                                 [
                                                                                                                                     "--ro-bind" "$INPUT_FILE" "/input"
-                                                                                                                                    # "--tmpfs" "/mounts"
-                                                                                                                                    # "--remount-ro" "/mounts"
                                                                                                                                     "--bind" "$OUTPUT_FILE" "/output"
                                                                                                                                     "--tmpfs" "/private"
                                                                                                                                 ]
