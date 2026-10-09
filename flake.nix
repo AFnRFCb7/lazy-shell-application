@@ -59,7 +59,7 @@
                                                                                                                     name = "cleanup" ;
                                                                                                                     runtimeInputs = [ _pkgs.coreutils ] ;
                                                                                                                     text =
-                                                                                                                        config.visitor
+                                                                                                                        _config.visitor
                                                                                                                             { }
                                                                                                                             {
                                                                                                                                 null =
