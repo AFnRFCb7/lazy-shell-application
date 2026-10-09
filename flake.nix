@@ -305,7 +305,7 @@
                                                                                                 )
                                                                                             ] ;
                                                                                     } ;
-                                                                                imports = [ failure implementation ] ;
+                                                                                imports = [ failure implementation visitor ] ;
                                                                             } ;
                                                             testScript =
                                                                 ''
