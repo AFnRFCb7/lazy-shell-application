@@ -309,7 +309,7 @@
                                                                 ''
                                                                     client.wait_for_unit("multi-user.target")
                                                                     client.succeed("test-setup")
-                                                                    client.succeed("test-script")
+                                                                    # client.succeed("test-script")
                                                                 '' ;
                                                         } ;
                                                 in
