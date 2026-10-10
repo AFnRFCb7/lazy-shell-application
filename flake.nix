@@ -280,7 +280,6 @@
                                                                                                                     ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
                                                                                                                 ] ;
                                                                                                             text =
-                                                                                                                let x =
                                                                                                                 ''
                                                                                                                     mkdir --parents /build/expected
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
@@ -299,7 +298,7 @@
                                                                                                                     fi
                                                                                                                     echo "$STATUS" > /build/observed/status
                                                                                                                     diff --recursive --unified /build/expected /build/observed
-                                                                                                                '' ; in builtins.trace x x ;
+                                                                                                                ''
                                                                                                         }
                                                                                                 )
                                                                                             ] ;
