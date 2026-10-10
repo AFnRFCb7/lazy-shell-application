@@ -212,7 +212,7 @@
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         ## if true ; then exit 78 ; fi ;
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
-                                                                                                        # if true ; then exit 78 ; fi ;
+                                                                                                        ## if true ; then exit 78 ; fi ;
                                                                                                         echo -n "$STANDARD_OUTPUT"
                                                                                                         # if true ; then exit 78 ; fi ;
                                                                                                         STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
