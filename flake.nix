@@ -298,7 +298,7 @@
                                                                                                                         # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
                                                                                                                     fi
-                                                                                                                    if true ; then exit 99 ; fi
+                                                                                                                    if true ; then exit 88 ; fi
                                                                                                                     echo "$STATUS" > /build/observed/status
                                                                                                                     diff --recursive --unified /build/expected /build/observed
                                                                                                                 '' ;
