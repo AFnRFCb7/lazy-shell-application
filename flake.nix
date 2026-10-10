@@ -187,6 +187,13 @@
                                                                                                         trap cleanup EXIT
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
+                                                                                                            jq \
+                                                                                                                --null-input \
+                                                                                                                --args \
+                                                                                                                '{
+                                                                                                                    "arguments" : $ARGS.positional
+                                                                                                                }' -- "$@" > "$INPUT_FILE"
+                                                                                                        else
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
                                                                                                                 --null-input \
@@ -198,13 +205,6 @@
                                                                                                                         {
                                                                                                                             "standard" : $STANDARD_INPUT
                                                                                                                         }
-                                                                                                                }' -- "$@" > "$INPUT_FILE"
-                                                                                                        else
-                                                                                                            jq \
-                                                                                                                --null-input \
-                                                                                                                --args \
-                                                                                                                '{
-                                                                                                                    "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
