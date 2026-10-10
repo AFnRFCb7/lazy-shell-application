@@ -298,7 +298,7 @@
                                                                                                                     fi
                                                                                                                     echo "$STATUS" > /build/observed/status
                                                                                                                     diff --recursive --unified /build/expected /build/observed
-                                                                                                                ''
+                                                                                                                '' ;
                                                                                                         }
                                                                                                 )
                                                                                             ] ;
