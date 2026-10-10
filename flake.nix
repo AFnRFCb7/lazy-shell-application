@@ -185,7 +185,7 @@
                                                                                                         export OUTPUT_FILE
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXIT
-                                                                                                        if [[ -t 0 ]]
+                                                                                                        if [[ ! -t 0 ]]
                                                                                                         then
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
