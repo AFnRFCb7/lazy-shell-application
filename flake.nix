@@ -207,8 +207,9 @@
                                                                                                                     "arguments" : $ARGS.positional
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
-                                                                                                        if true ; then exit 78 ; fi
+                                                                                                        # if true ; then exit 78 ; fi
                                                                                                         user-environment
+                                                                                                        if true ; then exit 78 ; fi
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
