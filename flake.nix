@@ -286,7 +286,7 @@
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
                                                                                                                     echo ${ builtins.toString status } > /build/expected/status
                                                                                                                     mkdir --parents /build/observed
-                                                                                                                    if true ; then exit 99 ; fi
+                                                                                                                    # if true ; then exit 99 ; fi
                                                                                                                     exec 0<&-
                                                                                                                     # shellcheck disable=SC2065
                                                                                                                     if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
@@ -297,6 +297,7 @@
                                                                                                                         # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
                                                                                                                     fi
+                                                                                                                    if true ; then exit 99 ; fi
                                                                                                                     echo "$STATUS" > /build/observed/status
                                                                                                                     diff --recursive --unified /build/expected /build/observed
                                                                                                                 '' ;
