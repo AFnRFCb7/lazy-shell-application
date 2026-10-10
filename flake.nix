@@ -185,7 +185,7 @@
                                                                                                         export OUTPUT_FILE
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXIT
-                                                                                                        if true ; then exit 78 ; fi
+                                                                                                        # if true ; then exit 78 ; fi
                                                                                                         if [[ -t 0 ]]
                                                                                                         then
                                                                                                             jq \
@@ -208,6 +208,7 @@
                                                                                                                         }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
+                                                                                                        if true ; then exit 79 ; fi
                                                                                                         user-environment
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
