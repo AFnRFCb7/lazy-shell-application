@@ -303,7 +303,7 @@
                                                                                                                                             _pkgs.writeShellApplication
                                                                                                                                                 {
                                                                                                                                                     name = "post" ;
-                                                                                                                                                    runtime-inputs = [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtimeInputs = [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
