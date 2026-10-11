@@ -270,7 +270,7 @@
                                                                                                                 ''
                                                                                                                     exec 123>/build/lock
                                                                                                                     flock -x 123
-                                                                                                                    ${ post-test }
+                                                                                                                    ${ if builtins.typeOf post-test == "null" then "" else post-test }
                                                                                                                 '' ;
                                                                                                         }
                                                                                                 )
@@ -302,7 +302,7 @@
                                                                                                                                         application =
                                                                                                                                             _config.lazy-shell-application
                                                                                                                                                 {
-                                                                                                                                                    moun0270982783716055ts = { } ;
+                                                                                                                                                    mounts = { } ;
                                                                                                                                                     name = "post" ;
                                                                                                                                                     post = null ;
                                                                                                                                                     runtime-inputs = pkgs : [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
@@ -349,6 +349,7 @@
                                                                     client.wait_for_unit("multi-user.target")
                                                                     client.succeed("pre-test")
                                                                     client.succeed("test-script")
+                                                                    client.succeed("post-test")
                                                                 '' ;
                                                         } ;
                                                 in
