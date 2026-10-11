@@ -185,7 +185,7 @@
                                                                                                         export OUTPUT_FILE
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         trap cleanup EXIT
-                                                                                                        if [[ -t 0 ]]
+                                                                                                        if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
                                                                                                         then
                                                                                                             jq \
                                                                                                                 --null-input \
@@ -288,7 +288,7 @@
                                                                                                                     mkdir --parents /build/observed
                                                                                                                     exec 0<&-
                                                                                                                     # shellcheck disable=SC2065
-                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "< /dev/null" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
                                                                                                                         # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
