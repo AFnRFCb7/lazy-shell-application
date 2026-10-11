@@ -227,7 +227,8 @@
                                             failure ,
                                             nixosTest ,
                                             obviated-by ,
-                                            test-setup ,
+                                            post-test ,
+                                            pre-test ,
                                             visitor
                                         } :
                                         {
@@ -263,9 +264,22 @@
                                                                                                 (
                                                                                                     _pkgs.writeShellApplication
                                                                                                         {
-                                                                                                            name = "test-setup" ;
+                                                                                                            name = "post-test" ;
+                                                                                                            runtimeInputs = [ _pkgs.coreutils _pkgs.flock ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    exec 123>/build/lock
+                                                                                                                    flock -x 123
+                                                                                                                    ${ post-test }
+                                                                                                                '' ;
+                                                                                                        }
+                                                                                                )
+                                                                                                (
+                                                                                                    _pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "pre-test" ;
                                                                                                             runtimeInputs = [ _pkgs.coreutils ] ;
-                                                                                                            text = test-setup ;
+                                                                                                            text = pre-test ;
                                                                                                         }
                                                                                                 )
                                                                                                 (
@@ -296,7 +310,7 @@
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
                                                                                                                                                             flock -x 123
-                                                                                                                                                            ${ post }
+                                                                                                                                                            ${ if builtins.typeOf post == "null" then "" else post }
                                                                                                                                                         '' ;
                                                                                                                                                 } ;
                                                                                                                                         in "${ application }/bin/post" ;
@@ -333,7 +347,7 @@
                                                             testScript =
                                                                 ''
                                                                     client.wait_for_unit("multi-user.target")
-                                                                    client.succeed("test-setup")
+                                                                    client.succeed("pre-test")
                                                                     client.succeed("test-script")
                                                                 '' ;
                                                         } ;
