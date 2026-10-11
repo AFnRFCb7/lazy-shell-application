@@ -300,12 +300,10 @@
                                                                                                                                 post =
                                                                                                                                     let
                                                                                                                                         application =
-                                                                                                                                            _config.lazy-shell-application
+                                                                                                                                            _pkgs.writeShellApplication
                                                                                                                                                 {
-                                                                                                                                                    mounts = { } ;
                                                                                                                                                     name = "post" ;
-                                                                                                                                                    post = null ;
-                                                                                                                                                    runtime-inputs = pkgs : [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtime-inputs = [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
