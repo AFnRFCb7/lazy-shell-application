@@ -302,10 +302,10 @@
                                                                                                                                         application =
                                                                                                                                             _config.lazy-shell-application
                                                                                                                                                 {
-                                                                                                                                                    mounts = { } ;
+                                                                                                                                                    moun0270982783716055ts = { } ;
                                                                                                                                                     name = "post" ;
                                                                                                                                                     post = null ;
-                                                                                                                                                    runtime-inputs = pkgs : [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtime-inputs = pkgs : [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
