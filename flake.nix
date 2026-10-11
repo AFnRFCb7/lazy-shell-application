@@ -286,7 +286,6 @@
                                                                                                                     ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
                                                                                                                     echo ${ builtins.toString status } > /build/expected/status
                                                                                                                     mkdir --parents /build/observed
-                                                                                                                    # exec 0<&-
                                                                                                                     # shellcheck disable=SC2065
                                                                                                                     if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
