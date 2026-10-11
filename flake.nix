@@ -277,7 +277,32 @@
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
                                                                                                                     _pkgs.which
-                                                                                                                    ( _config.lazy-shell-application { mounts = mounts ; name = name ; post = post ; runtime-inputs = runtime-inputs ; text = text ; } )
+                                                                                                                    (
+                                                                                                                        _config.lazy-shell-application
+                                                                                                                            {
+                                                                                                                                mounts = mounts ;
+                                                                                                                                name = name ;
+                                                                                                                                post =
+                                                                                                                                    let
+                                                                                                                                        application =
+                                                                                                                                            _config.lazy-shell-application
+                                                                                                                                                {
+                                                                                                                                                    mounts = { } ;
+                                                                                                                                                    name = "post" ;
+                                                                                                                                                    post = null ;
+                                                                                                                                                    runtime-inputs = pkgs : [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    text =
+                                                                                                                                                        ''
+                                                                                                                                                            exec 123>/build/lock
+                                                                                                                                                            flock -x 123
+                                                                                                                                                            ${ post }
+                                                                                                                                                        '' ;
+                                                                                                                                                } ;
+                                                                                                                                        in "${ application }/bin/post" ;
+                                                                                                                                runtime-inputs = runtime-inputs ;
+                                                                                                                                text = text ;
+                                                                                                                            }
+                                                                                                                    )
                                                                                                                 ] ;
                                                                                                             text =
                                                                                                                 ''
