@@ -276,6 +276,7 @@
                                                                                                                 [
                                                                                                                     _pkgs.coreutils
                                                                                                                     _pkgs.diffutils
+                                                                                                                    _pkgs.flock
                                                                                                                     _pkgs.which
                                                                                                                     (
                                                                                                                         _config.lazy-shell-application
