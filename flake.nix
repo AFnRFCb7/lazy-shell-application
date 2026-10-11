@@ -83,6 +83,7 @@
                                                                                                             _pkgs.buildFHSUserEnv
                                                                                                                 {
                                                                                                                     extraBwrapArgs =
+                                                                                                                        let x =
                                                                                                                         builtins.concatLists
                                                                                                                             [
                                                                                                                                 [
@@ -106,6 +107,7 @@
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
+                                                                                                                            in builtins.trace ( builtins.toJSON x ) x ;
                                                                                                                     name = "user-environment" ;
                                                                                                                     runScript = "script" ;
                                                                                                                     targetPkgs =
