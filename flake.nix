@@ -288,7 +288,7 @@
                                                                                                                     mkdir --parents /build/observed
                                                                                                                     exec 0<&-
                                                                                                                     # shellcheck disable=SC2065
-                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "< /dev/null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
                                                                                                                     then
                                                                                                                         # shellcheck disable=SC2319
                                                                                                                         STATUS="$?"
