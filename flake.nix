@@ -96,7 +96,7 @@
                                                                                                                                                 TEMPORARY_PIPE="$1"
                                                                                                                                                 CHANNEL="$2"
                                                                                                                                                 mkfifo "$TEMPORARY_PIPE"
-                                                                                                                                                nohup "$TEMPORARY_PIPE" >&$CHANNEL > /dev/null >&2 &
+                                                                                                                                                nohup "$TEMPORARY_PIPE" >&"$CHANNEL" > /dev/null >&2 &
                                                                                                                                             '' ;
                                                                                                                                     }
                                                                                                                             )
