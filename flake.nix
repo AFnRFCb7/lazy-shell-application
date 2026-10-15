@@ -90,7 +90,7 @@
                                                                                                                             TEMPORARY_PIPE="$1"
                                                                                                                             CHANNEL="$2"
                                                                                                                             mkfifo "$TEMPORARY_PIPE"
-                                                                                                                            nohup "$TEMPORARY_PIPE" >&"$CHANNEL" > /dev/null >&2 &
+                                                                                                                            nohup cat "$TEMPORARY_PIPE" >&"$CHANNEL" > /dev/null >&2 &
                                                                                                                         '' ;
                                                                                                                 }
                                                                                                         )
@@ -117,8 +117,8 @@
                                                                                                                                                 else if type == "memory" && read-only && ! directory then builtins.throw "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                                else if type == "bind" && read-only then builtins.throw "read-only pipes make no sense"
-                                                                                                                                                else if type == "bind" && directory then builtins.throw "directory pipes make no sense"
+                                                                                                                                                else if type == "pipe" && read-only then builtins.throw "read-only pipes make no sense"
+                                                                                                                                                else if type == "pipe" && directory then builtins.throw "directory pipes make no sense"
                                                                                                                                                 else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
