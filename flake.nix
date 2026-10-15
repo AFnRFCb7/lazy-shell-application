@@ -73,10 +73,38 @@
                                                                                                                                         ''
                                                                                                                                             nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1
                                                                                                                                             rm --force "$INPUT_FILE" "$OUTPUT_FILE"
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                        '' ;
                                                                                                                             }
                                                                                                                             post ;
+                                                                                                                }
+                                                                                                        )
+                                                                                                        (
+                                                                                                            _pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "pipe-consumer" ;
+                                                                                                                    runtimeInputs =
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                _pkgs.writeShellApplication
+                                                                                                                                    {
+                                                                                                                                        name = "pipe-consume" ;
+                                                                                                                                        runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                                                        text =
+                                                                                                                                            ''
+                                                                                                                                                TEMPORARY_PIPE="$1"
+                                                                                                                                                CHANNEL="$2"
+                                                                                                                                                mkfifo "$TEMPORARY_PIPE"
+                                                                                                                                                nohup "$TEMPORARY_PIPE" >&$CHANNEL > /dev/null >&2 &
+                                                                                                                                            '' ;
+                                                                                                                                    }
+                                                                                                                            )
+                                                                                                                        ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source , type , ... } : if type == "pipe" then [ "pipe-consume ${ "$" }TEMPORARY_${ builtins.hashString "sha512" name } ${ builtins.toString source }" ] else [ ] ) ) ) ) }
+                                                                                                                        '' ;
                                                                                                                 }
                                                                                                         )
                                                                                                         (
@@ -102,6 +130,9 @@
                                                                                                                                                 else if type == "memory" && read-only && ! directory then builtins.throw "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! directory then [ "--tmpfs" "/memory/${ name }" ]
+                                                                                                                                                else if "type" == "bind" && read-only then builtins.throw "read-only pipes make no sense"
+                                                                                                                                                else if "type" == "bind" && is-directory then builtins.throw "directory pipes make no sense"
+                                                                                                                                                else if "type" == "pipe" then [ ''--bind ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
                                                                                                                                                 else builtins.throw "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
@@ -183,7 +214,9 @@
                                                                                                         export INPUT_FILE
                                                                                                         OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                         export OUTPUT_FILE
+                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                        pipe-consumer
                                                                                                         trap cleanup EXIT
                                                                                                         if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
                                                                                                         then
