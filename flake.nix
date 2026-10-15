@@ -133,7 +133,7 @@
                                                                                                                                                 else if "type" == "bind" && read-only then builtins.throw "read-only pipes make no sense"
                                                                                                                                                 else if "type" == "bind" && directory then builtins.throw "directory pipes make no sense"
                                                                                                                                                 else if "type" == "pipe" then [ ''--bind ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                                else builtins.throw "unsupported type ${ type }" ;
+                                                                                                                                                else builtins.throw "ZXXXXXXXXXXXX unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
