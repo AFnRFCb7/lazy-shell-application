@@ -230,7 +230,6 @@
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
-                                                                                                        echo
                                                                                                         STANDARD_ERROR="$( jq --raw-output '.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
                                                                                                         STANDARD_OUTPUT="$( jq --raw-output '.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
