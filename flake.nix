@@ -108,7 +108,7 @@
                                                                                                                                 (
                                                                                                                                     let
                                                                                                                                         mapper =
-                                                                                                                                            name : { is-directory ? true , read-only ? false , source ? null , type } :
+                                                                                                                                            name : { delete ? true , is-directory ? true , read-only ? false , source ? null , type } :
                                                                                                                                                 if type == "bind" && read-only then [ "--ro-bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "bind" && ! read-only then [ "--bind" source "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
