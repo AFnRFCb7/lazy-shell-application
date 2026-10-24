@@ -6,6 +6,7 @@
                 lib =
                     {
                         config-identity ? x : x ,
+                        implementation-identity ? x : x ,
                         lib-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x
@@ -381,7 +382,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = implementation ;
+                                    implementation = implementation-identity implementation ;
                                 } ;
             } ;
 }
