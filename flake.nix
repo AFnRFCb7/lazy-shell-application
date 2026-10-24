@@ -39,7 +39,7 @@
                                                                                         {
                                                                                             mounts = mounts ;
                                                                                             name =
-                                                                                                if name == "test" then builtins.throw "test is not a good name"
+                                                                                                if name == "test" then _config.trip "test is not a good name"
                                                                                                 else name ;
                                                                                             post = post ;
                                                                                             runtime-inputs = runtime-inputs ;
@@ -115,16 +115,16 @@
                                                                                                                                                 else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
-                                                                                                                                                else if type == "memory" && read-only && ! is-directory then builtins.throw "memory and read-only and ! directory makes no sense "
+                                                                                                                                                else if type == "memory" && read-only && ! is-directory then _config.trip "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                                else if type == "null" && read-only then builtins.throw "read-only null make no sense"
-                                                                                                                                                else if type == "null" && is-directory then builtins.throw "directory null make no sense"
+                                                                                                                                                else if type == "null" && read-only then _config.trip "read-only null make no sense"
+                                                                                                                                                else if type == "null" && is-directory then _config.trip "directory null make no sense"
                                                                                                                                                 else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
-                                                                                                                                                else if type == "pipe" && read-only then builtins.throw "read-only pipes make no sense"
-                                                                                                                                                else if type == "pipe" && is-directory then builtins.throw "directory pipes make no sense"
+                                                                                                                                                else if type == "pipe" && read-only then _config.trip "read-only pipes make no sense"
+                                                                                                                                                else if type == "pipe" && is-directory then _config.trip "directory pipes make no sense"
                                                                                                                                                 else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                                else builtins.throw "unsupported type ${ type }" ;
+                                                                                                                                                else _config.trip "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
@@ -255,6 +255,7 @@
                                             obviated-by ,
                                             post-test ,
                                             pre-test ,
+                                            trip ,
                                             visitor
                                         } :
                                         {
@@ -366,7 +367,7 @@
                                                                                                 )
                                                                                             ] ;
                                                                                     } ;
-                                                                                imports = [ failure implementation visitor ] ;
+                                                                                imports = [ failure implementation trip visitor ] ;
                                                                             } ;
                                                             testScript =
                                                                 ''
