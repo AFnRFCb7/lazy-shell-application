@@ -32,7 +32,8 @@
                                                                                 name ,
                                                                                 post ,
                                                                                 runtime-inputs ,
-                                                                                text
+                                                                                text ,
+                                                                                variables
                                                                             } :
                                                                                 let
                                                                                     parameters =
@@ -44,6 +45,7 @@
                                                                                             post = post ;
                                                                                             runtime-inputs = runtime-inputs ;
                                                                                             text = text ;
+                                                                                            variables = variables ;
                                                                                         } ;
                                                                                     in
                                                                                         _pkgs.writeShellApplication
@@ -165,6 +167,8 @@
                                                                                                                                                     mapfile -t ARGUMENTS < <(
                                                                                                                                                         jq --raw-output '.arguments[]' /input
                                                                                                                                                     )
+                                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name }="$( jq --raw-output '.variables.${ name }' /input ) || failure 9367334832748350'' ) variables ) ) }
+                                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''export ${ name }'' ) variables ) ) }
                                                                                                                                                     if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input > /private/exit-status
                                                                                                                                                     then
                                                                                                                                                         STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input )" || failure 7828132754944749
@@ -215,22 +219,26 @@
                                                                                                         then
                                                                                                             jq \
                                                                                                                 --null-input \
+                                                                                                                ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) ) } \
                                                                                                                 --args \
                                                                                                                 '{
-                                                                                                                    "arguments" : $ARGS.positional
+                                                                                                                    "arguments" : $ARGS.positional ,
+                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ name } ,'' ) ) ) } }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                             jq \
                                                                                                                 --null-input \
                                                                                                                 --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                                                                ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) ) } \
                                                                                                                 --args \
                                                                                                                 '{
                                                                                                                     "arguments" : $ARGS.positional ,
                                                                                                                     "inputs" :
                                                                                                                         {
                                                                                                                             "standard" : $STANDARD_INPUT
-                                                                                                                        }
+                                                                                                                        } ,
+                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) ) ) } }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
