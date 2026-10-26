@@ -219,11 +219,11 @@
                                                                                                         then
                                                                                                             jq \
                                                                                                                 --null-input \
-                                                                                                                ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) ) } \
+                                                                                                                ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) variables ) } \
                                                                                                                 --args \
                                                                                                                 '{
                                                                                                                     "arguments" : $ARGS.positional ,
-                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ name } ,'' ) ) ) } }
+                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ name } ,'' ) variables ) ) } }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
                                                                                                             STANDARD_INPUT="$( cat )" || failure 6712938899436674
