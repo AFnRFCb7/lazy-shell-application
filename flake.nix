@@ -238,7 +238,7 @@
                                                                                                                         {
                                                                                                                             "standard" : $STANDARD_INPUT
                                                                                                                         } ,
-                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) paramters.variables ) ) } }
+                                                                                                                    "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
