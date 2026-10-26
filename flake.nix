@@ -349,6 +349,7 @@
                                                                                                                                         in "${ application }/bin/post" ;
                                                                                                                                 runtime-inputs = runtime-inputs ;
                                                                                                                                 text = text ;
+                                                                                                                                variables = { } ;
                                                                                                                             }
                                                                                                                     )
                                                                                                                 ] ;
