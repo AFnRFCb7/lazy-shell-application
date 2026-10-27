@@ -246,10 +246,10 @@
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         fi
                                                                                                         user-environment
-                                                                                                        STANDARD_ERROR="$( jq --raw-output '.["outputs.standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
+                                                                                                        STANDARD_ERROR="$( jq --raw-output '.outputs.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
                                                                                                         echo -n "$STANDARD_ERROR" >&2
-                                                                                                        STANDARD_OUTPUT="$( jq --raw-output '.["outputs.standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
-                                                                                                        echo -n "7212311367765420$STANDARD_OUTPUT8549268823074828"
+                                                                                                        STANDARD_OUTPUT="$( jq --raw-output '.outputs.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
+                                                                                                        echo -n "$STANDARD_OUTPUT"
                                                                                                         STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
                                                                                                         exit "$STATUS"
                                                                                                     '' ;
