@@ -5,44 +5,33 @@
             {
                 lib =
                     {
-                        _class-identity ? x : x ,
-                        _file-identity ? x : x ,
-                        config-identity ? x : x ,
-                        disableModules-identity ? x : x ,
-                        freeFormType-identity ? x : x ,
-                        implementation-identity ? x : x ,
-                        imports-identity ? x : x ,
-                        key-identity ? x : x ,
-                        lib-identity ? x : x ,
-                        meta-identity ? x : x ,
-                        modulesPath-identity ? x : x ,
-                        options-identity ? x : x ,
-                        pkgs-identity ? x : x ,
-                        specialArgs-identity ? x : x
-                    } :
+                        _class ? x : x ,
+                        _file ? x : x ,
+                        config ? x : x ,
+                        disableModules ? x : x ,
+                        freeFormType ? x : x ,
+                        implementation ? x : x ,
+                        imports ? x : x ,
+                        key ? x : x ,
+                        lib ? x : x ,
+                        meta ? x : x ,
+                        modulesPath ? x : x ,
+                        options ? x : x ,
+                        pkgs ? x : x ,
+                        specialArgs ? x : x
+                    } @identity :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } @module:
                                     let
-                                        __class = _class-identity _class ;
-                                        __file = _file-identity _file ;
-                                        _config = config-identity config ;
-                                        _disableModules = disableModules-identity disableModules ;
-                                        _freeFormType = freeFormType-identity freeFormType ;
-                                        _key = key-identity key ;
-                                        _lib = lib-identity lib ;
-                                        _meta = meta-identity meta ;
-                                        _modulesPath = modulesPath-identity modulesPath ;
-                                        _options = options-identity options ;
-                                        _pkgs = pkgs-identity pkgs ;
-                                        _specialArgs = specialArgs-identity specialArgs ;
+                                        identified = lib.mapAttrs ( name : value : builtins.getAttr name identity ( builtins.attr name module ) ) ( module.lib.intersectLists ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                         in
                                             {
                                                 options =
                                                     options-identity
                                                         {
                                                             lazy-shell-application =
-                                                                _lib.mkOption
+                                                                identified.lib.mkOption
                                                                     {
                                                                         default =
                                                                             {
@@ -58,7 +47,7 @@
                                                                                         {
                                                                                             mounts = mounts ;
                                                                                             name =
-                                                                                                if name == "test" then _config.trip "test is not a good name"
+                                                                                                if name == "test" then identified.config.trip "test is not a good name"
                                                                                                 else name ;
                                                                                             post = post ;
                                                                                             runtime-inputs = runtime-inputs ;
@@ -66,21 +55,21 @@
                                                                                             variables = variables ;
                                                                                         } ;
                                                                                     in
-                                                                                        _pkgs.writeShellApplication
+                                                                                        identified.pkgs.writeShellApplication
                                                                                             {
                                                                                                 name = parameters.name ;
                                                                                                 runtimeInputs =
                                                                                                     [
-                                                                                                        ( _config.failure { } )
-                                                                                                        _pkgs.coreutils
-                                                                                                        _pkgs.jq
+                                                                                                        ( identified.config.failure { } )
+                                                                                                        identified.pkgs.coreutils
+                                                                                                        identified.pkgs.jq
                                                                                                         (
-                                                                                                            _pkgs.writeShellApplication
+                                                                                                            identified.pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "cleanup" ;
-                                                                                                                    runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                                    runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                                     text =
-                                                                                                                        _config.visitor
+                                                                                                                        identified.config.visitor
                                                                                                                             { }
                                                                                                                             {
                                                                                                                                 null =
@@ -102,10 +91,10 @@
                                                                                                                 }
                                                                                                         )
                                                                                                         (
-                                                                                                            _pkgs.writeShellApplication
+                                                                                                            identified.pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "pipe-consumer" ;
-                                                                                                                    runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                                    runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             TEMPORARY_PIPE="$1"
@@ -116,7 +105,7 @@
                                                                                                                 }
                                                                                                         )
                                                                                                         (
-                                                                                                            _pkgs.buildFHSUserEnv
+                                                                                                            identified.pkgs.buildFHSUserEnv
                                                                                                                 {
                                                                                                                     extraBwrapArgs =
                                                                                                                         builtins.concatLists
@@ -135,16 +124,16 @@
                                                                                                                                                 else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
-                                                                                                                                                else if type == "memory" && read-only && ! is-directory then _config.trip "memory and read-only and ! directory makes no sense "
+                                                                                                                                                else if type == "memory" && read-only && ! is-directory then identified.config.trip "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                                else if type == "null" && read-only then _config.trip "read-only null make no sense"
-                                                                                                                                                else if type == "null" && is-directory then _config.trip "directory null make no sense"
+                                                                                                                                                else if type == "null" && read-only then identified.config.trip "read-only null make no sense"
+                                                                                                                                                else if type == "null" && is-directory then identified.config.trip "directory null make no sense"
                                                                                                                                                 else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
-                                                                                                                                                else if type == "pipe" && read-only then _config.trip "read-only pipes make no sense"
-                                                                                                                                                else if type == "pipe" && is-directory then _config.trip "directory pipes make no sense"
+                                                                                                                                                else if type == "pipe" && read-only then identified.config.trip "read-only pipes make no sense"
+                                                                                                                                                else if type == "pipe" && is-directory then identified.config.trip "directory pipes make no sense"
                                                                                                                                                 else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                                else _config.trip "unsupported type ${ type }" ;
+                                                                                                                                                else identified.config.trip "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
@@ -167,7 +156,7 @@
                                                                                                                                             name = "script" ;
                                                                                                                                             runtimeInputs =
                                                                                                                                                 [
-                                                                                                                                                    ( _config.failure { } )
+                                                                                                                                                    ( identified.config.failure { } )
                                                                                                                                                     pkgs.coreutils
                                                                                                                                                     pkgs.findutils
                                                                                                                                                     pkgs.jq
@@ -272,7 +261,7 @@
                                                                                                         exit "$STATUS"
                                                                                                     '' ;
                                                                                             } ;
-                                                                        type = _lib.types.functionTo _lib.types.package ;
+                                                                        type = identified.lib.types.functionTo identified.lib.types.package ;
                                                                     } ;
                                                         } ;
                                             } ;
@@ -310,8 +299,8 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } :
                                                                     let
-                                                                        _config = config-identity config ;
-                                                                        _pkgs = pkgs-identity pkgs ;
+                                                                        identified.config = config-identity config ;
+                                                                        identified.pkgs = pkgs-identity pkgs ;
                                                                         in
                                                                             {
                                                                                 config =
@@ -319,10 +308,10 @@
                                                                                         environment.systemPackages =
                                                                                             [
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "post-test" ;
-                                                                                                            runtimeInputs = [ _pkgs.coreutils _pkgs.flock ] ;
+                                                                                                            runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     exec 123>/build/lock
@@ -332,35 +321,35 @@
                                                                                                         }
                                                                                                 )
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "pre-test" ;
-                                                                                                            runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                            runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                             text = pre-test ;
                                                                                                         }
                                                                                                 )
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "test-script" ;
                                                                                                             runtimeInputs =
                                                                                                                 [
-                                                                                                                    _pkgs.coreutils
-                                                                                                                    _pkgs.diffutils
-                                                                                                                    _pkgs.flock
-                                                                                                                    _pkgs.which
+                                                                                                                    identified.pkgs.coreutils
+                                                                                                                    identified.pkgs.diffutils
+                                                                                                                    identified.pkgs.flock
+                                                                                                                    identified.pkgs.which
                                                                                                                     (
-                                                                                                                        _config.lazy-shell-application
+                                                                                                                        identified.config.lazy-shell-application
                                                                                                                             {
                                                                                                                                 mounts = mounts ;
                                                                                                                                 name = name ;
                                                                                                                                 post =
                                                                                                                                     let
                                                                                                                                         application =
-                                                                                                                                            _pkgs.writeShellApplication
+                                                                                                                                            identified.pkgs.writeShellApplication
                                                                                                                                                 {
                                                                                                                                                     name = "post" ;
-                                                                                                                                                    runtimeInputs = [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
