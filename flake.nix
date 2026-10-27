@@ -15,7 +15,7 @@
                         key-identity ? x : x ,
                         lib-identity ? x : x ,
                         meta-identity ? x : x ,
-                        modulesPath ? x : x ,
+                        modulesPath-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x ,
                         specialArgs-identity ? x : x
