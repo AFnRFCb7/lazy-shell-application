@@ -297,10 +297,9 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
-                                                                { config , pkgs , ... } :
+                                                                { config , pkgs , ... } @module :
                                                                     let
-                                                                        identified.config = config-identity config ;
-                                                                        identified.pkgs = pkgs-identity pkgs ;
+                                                                        identified = lib.mapAttrs ( name : value : builtins.getAttr name identity ( builtins.attr name module ) ) ( module.lib.intersectLists ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                                                         in
                                                                             {
                                                                                 config =
