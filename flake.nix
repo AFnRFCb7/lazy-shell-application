@@ -15,13 +15,14 @@
                         key-identity ? x : x ,
                         lib-identity ? x : x ,
                         meta-identity ? x : x ,
+                        modulesPath ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x ,
                         specialArgs-identity ? x : x
                     } :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , options , pkgs , specialArgs } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } :
                                     let
                                         __class = _class-identity _class ;
                                         __file = _file-identity _file ;
@@ -31,6 +32,7 @@
                                         _key = key-identity key ;
                                         _lib = lib-identity lib ;
                                         _meta = meta-identity meta ;
+                                        _modulesPath = modulesPath-identity modulesPath ;
                                         _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
