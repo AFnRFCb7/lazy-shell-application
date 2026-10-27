@@ -403,7 +403,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = implementation-identity implementation ;
+                                    implementation = identity.implementation implementation ;
                                 } ;
             } ;
 }
