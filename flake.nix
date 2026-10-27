@@ -5,18 +5,32 @@
             {
                 lib =
                     {
+                        _class-identity ? x : x ,
+                        _file-identity ? x : x ,
                         config-identity ? x : x ,
+                        disableModules-identity ? x : x ,
+                        freeFormType-identity ? x : x ,
                         implementation-identity ? x : x ,
+                        imports-identity ? x : x ,
+                        key-identity ? x : x ,
                         lib-identity ? x : x ,
+                        meta-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x
                     } :
                         let
                             implementation =
-                                { config , lib , pkgs , ... } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , options , pkgs } :
                                     let
+                                        __class = _class-identity _class ;
+                                        __file = _file-identity _file ;
                                         _config = config-identity config ;
+                                        _disableModules = disableModules-identity disableModules ;
+                                        _freeFormType = freeFormType-identity freeFormType ;
+                                        _key = key-identity key ;
                                         _lib = lib-identity lib ;
+                                        _meta = meta-identity meta ;
+                                        _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
                                         in
                                             {
