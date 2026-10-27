@@ -16,11 +16,12 @@
                         lib-identity ? x : x ,
                         meta-identity ? x : x ,
                         options-identity ? x : x ,
-                        pkgs-identity ? x : x
+                        pkgs-identity ? x : x ,
+                        specialArgs-identity ? x : x
                     } :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , options , pkgs } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , options , pkgs , specialArgs } :
                                     let
                                         __class = _class-identity _class ;
                                         __file = _file-identity _file ;
@@ -32,6 +33,7 @@
                                         _meta = meta-identity meta ;
                                         _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
+                                        _specialArgs = specialArgs-identity specialArgs ;
                                         in
                                             {
                                                 options =
