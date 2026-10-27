@@ -223,6 +223,7 @@
                                                                                                                 --args \
                                                                                                                 '{
                                                                                                                     "arguments" : $ARGS.positional ,
+                                                                                                                    "inputs" : { } ,
                                                                                                                     "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ name } ,'' ) parameters.variables ) ) } }
                                                                                                                 }' -- "$@" > "$INPUT_FILE"
                                                                                                         else
