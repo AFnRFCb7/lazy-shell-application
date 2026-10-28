@@ -5,41 +5,41 @@
             {
                 lib =
                     {
-                        _class-identity ? x : x ,
-                        _file-identity ? x : x ,
-                        config-identity ? x : x ,
-                        disableModules-identity ? x : x ,
-                        freeFormType-identity ? x : x ,
-                        implementation-identity ? x : x ,
-                        imports-identity ? x : x ,
-                        key-identity ? x : x ,
-                        lib-identity ? x : x ,
-                        meta-identity ? x : x ,
-                        modulesPath-identity ? x : x ,
-                        options-identity ? x : x ,
-                        pkgs-identity ? x : x ,
-                        specialArgs-identity ? x : x
-                    } :
+                        _class ? x : x ,
+                        _file ? x : x ,
+                        config ? x : x ,
+                        disableModules ? x : x ,
+                        freeFormType ? x : x ,
+                        implementation ? x : x ,
+                        imports ? x : x ,
+                        key ? x : x ,
+                        lib ? x : x ,
+                        meta ? x : x ,
+                        modulesPath ? x : x ,
+                        options ? x : x ,
+                        pkgs ? x : x ,
+                        specialArgs ? x : x
+                    } @identity :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } @module :
                                     let
-                                        __class = _class-identity _class ;
-                                        __file = _file-identity _file ;
-                                        _config = config-identity config ;
-                                        _disableModules = disableModules-identity disableModules ;
-                                        _freeFormType = freeFormType-identity freeFormType ;
-                                        _key = key-identity key ;
-                                        _lib = lib-identity lib ;
-                                        _meta = meta-identity meta ;
-                                        _modulesPath = modulesPath-identity modulesPath ;
-                                        _options = options-identity options ;
-                                        _pkgs = pkgs-identity pkgs ;
-                                        _specialArgs = specialArgs-identity specialArgs ;
+                                        __class = identity._class _class ;
+                                        __file = identity._file _file ;
+                                        _config = identity.config config ;
+                                        _disableModules = identity.disableModules disableModules ;
+                                        _freeFormType = identity.freeFormType freeFormType ;
+                                        _key = identity.key key ;
+                                        _lib = identity.lib lib ;
+                                        _meta = identity.meta meta ;
+                                        _modulesPath = identity.modulesPath modulesPath ;
+                                        _options = identity.options options ;
+                                        _pkgs = identity.pkgs pkgs ;
+                                        _specialArgs = identity.specialArgs specialArgs ;
                                         in
                                             {
                                                 options =
-                                                    options-identity
+                                                    identity.options
                                                         {
                                                             lazy-shell-application =
                                                                 _lib.mkOption
@@ -310,8 +310,8 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } :
                                                                     let
-                                                                        _config = config-identity config ;
-                                                                        _pkgs = pkgs-identity pkgs ;
+                                                                        _config = identity.config config ;
+                                                                        _pkgs = identity.pkgs pkgs ;
                                                                         in
                                                                             {
                                                                                 config =
@@ -414,7 +414,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = implementation-identity implementation ;
+                                    implementation = identity.implementation implementation ;
                                 } ;
             } ;
 }
