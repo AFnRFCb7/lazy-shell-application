@@ -22,7 +22,6 @@
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _pkgs = pkgs-identity pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
                                         in
                                             {
@@ -53,19 +52,19 @@
                                                                                         variables = variables ;
                                                                                     } ;
                                                                                 in
-                                                                                    _pkgs.writeShellApplication
+                                                                                    identified.pkgs.writeShellApplication
                                                                                         {
                                                                                             name = parameters.name ;
                                                                                             runtimeInputs =
                                                                                                 [
                                                                                                     ( identified.config.failure { } )
-                                                                                                    _pkgs.coreutils
-                                                                                                    _pkgs.jq
+                                                                                                    identified.pkgs.coreutils
+                                                                                                    identified.pkgs.jq
                                                                                                     (
-                                                                                                        _pkgs.writeShellApplication
+                                                                                                        identified.pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "cleanup" ;
-                                                                                                                runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                                runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                                 text =
                                                                                                                     identified.config.visitor
                                                                                                                         { }
@@ -89,10 +88,10 @@
                                                                                                             }
                                                                                                     )
                                                                                                     (
-                                                                                                        _pkgs.writeShellApplication
+                                                                                                        identified.pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "pipe-consumer" ;
-                                                                                                                runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                                runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         TEMPORARY_PIPE="$1"
@@ -103,7 +102,7 @@
                                                                                                             }
                                                                                                     )
                                                                                                     (
-                                                                                                        _pkgs.buildFHSUserEnv
+                                                                                                        identified.pkgs.buildFHSUserEnv
                                                                                                             {
                                                                                                                 extraBwrapArgs =
                                                                                                                     builtins.concatLists
@@ -298,7 +297,7 @@
                                                                 { config , pkgs , ... } @module :
                                                                     let
                                                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                                                        _pkgs = pkgs-identity pkgs ;
+                                                                        identified.pkgs = pkgs-identity pkgs ;
                                                                         in
                                                                             {
                                                                                 config =
@@ -306,10 +305,10 @@
                                                                                         environment.systemPackages =
                                                                                             [
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "post-test" ;
-                                                                                                            runtimeInputs = [ _pkgs.coreutils _pkgs.flock ] ;
+                                                                                                            runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     exec 123>/build/lock
@@ -319,23 +318,23 @@
                                                                                                         }
                                                                                                 )
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "pre-test" ;
-                                                                                                            runtimeInputs = [ _pkgs.coreutils ] ;
+                                                                                                            runtimeInputs = [ identified.pkgs.coreutils ] ;
                                                                                                             text = pre-test ;
                                                                                                         }
                                                                                                 )
                                                                                                 (
-                                                                                                    _pkgs.writeShellApplication
+                                                                                                    identified.pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "test-script" ;
                                                                                                             runtimeInputs =
                                                                                                                 [
-                                                                                                                    _pkgs.coreutils
-                                                                                                                    _pkgs.diffutils
-                                                                                                                    _pkgs.flock
-                                                                                                                    _pkgs.which
+                                                                                                                    identified.pkgs.coreutils
+                                                                                                                    identified.pkgs.diffutils
+                                                                                                                    identified.pkgs.flock
+                                                                                                                    identified.pkgs.which
                                                                                                                     (
                                                                                                                         identified.config.lazy-shell-application
                                                                                                                             {
@@ -344,7 +343,7 @@
                                                                                                                                 post =
                                                                                                                                     let
                                                                                                                                         application =
-                                                                                                                                            _pkgs.writeShellApplication
+                                                                                                                                            identified.pkgs.writeShellApplication
                                                                                                                                                 {
                                                                                                                                                     name = "post" ;
                                                                                                                                                     runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
