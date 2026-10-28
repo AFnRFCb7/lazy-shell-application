@@ -38,7 +38,7 @@
                                         in
                                             {
                                                 options =
-                                                    identity.options
+                                                    ( ( if builtins.hasAttr "options" identity then builtins.getAttr "options" identity else x : x ) options )
                                                         {
                                                             lazy-shell-application =
                                                                 _lib.mkOption
