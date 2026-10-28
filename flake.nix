@@ -12,8 +12,7 @@
                                     let
                                         identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
                                         in
-                                            builtins.mapAttrs
-                                                ( name : value : ( if builtins.hasAttr name output then builtins.getAttr name output else x : x ) value )
+                                            ( if builtins.typeOf output == "lambda" then output else if builtins.typeOf output == "null" then x : x else builtins.throw "5088032703410749" )
                                                     {
                                                         options.lazy-shell-application =
                                                             identified.lib.mkOption
@@ -283,7 +282,7 @@
                                                             nodes.client =
                                                                 { ... } @module :
                                                                     let
-                                                                        identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
+                                                                        identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "3749763596647185" ;
                                                                         in
                                                                             {
                                                                                 config =
