@@ -4,8 +4,7 @@
         { self } :
             {
                 lib =
-                    output :
-                    input :
+                    { input , output } :
                         let
                             implementation =
                                 { ... } @module :
