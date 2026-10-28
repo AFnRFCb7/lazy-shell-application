@@ -338,7 +338,7 @@
                                                                                                                                             identified.pkgs.writeShellApplication
                                                                                                                                                 {
                                                                                                                                                     name = "post" ;
-                                                                                                                                                    runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtimeInputs = [ ( identified.config.failure { } ) identified.pkgs.coreutils identified.pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
