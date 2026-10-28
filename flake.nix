@@ -27,9 +27,6 @@
                                             else if builtins.typeOf input == "null" then module
                                             else if builtins.typeOf input == "set" then module
                                             else builtins.throw "9691845661093396" ;
-                                        _meta = meta-identity meta ;
-                                        _modulesPath = modulesPath-identity modulesPath ;
-                                        _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
                                         in
