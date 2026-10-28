@@ -4,27 +4,12 @@
         { self } :
             {
                 lib =
-                    {
-                        _class ? x : x ,
-                        _file ? x : x ,
-                        config ? x : x ,
-                        disableModules ? x : x ,
-                        freeFormType ? x : x ,
-                        implementation ? x : x ,
-                        imports ? x : x ,
-                        key ? x : x ,
-                        lib ? x : x ,
-                        meta ? x : x ,
-                        modulesPath ? x : x ,
-                        options ? x : x ,
-                        pkgs ? x : x ,
-                        specialArgs ? x : x
-                    } @identity :
+                    { implementation ? x : x , ... } @identity :
                         let
                             implementation =
                                 { config , lib , options , pkgs , ... } @module :
                                     let
-                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( ( identity.lib or ( x : x ) ) module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( builtins.getAttr name identity or ( x : x ) ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
                                         in
                                             {
                                                 options =
@@ -299,7 +284,7 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } @module:
                                                                     let
-                                                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( ( identity.lib or ( x : x ) ) module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( builtins.getAttr name identity or ( x : x ) ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
                                                                         in
                                                                             {
                                                                                 config =
