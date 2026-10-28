@@ -13,7 +13,6 @@
                                         identified =
                                             if builtins.typeOf input == "lambda" then input module
                                             else if builtins.typeOf input == "null" then module
-                                            else if builtins.typeOf input == "set" then module
                                             else builtins.throw "8299711708119047" ;
                                         in
                                             with identified ;
