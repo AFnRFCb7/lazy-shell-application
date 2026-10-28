@@ -402,7 +402,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = identified.implementation implementation ;
+                                    implementation = identity.implementation implementation ;
                                 } ;
             } ;
 }
