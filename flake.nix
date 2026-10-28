@@ -4,25 +4,23 @@
         { self } :
             {
                 lib =
-                    { implementation } @control :
+                    { options ? x : x } @control :
                     {
-                        options-identity ? x : x ,
                         pkgs-identity ? x : x ,
                         specialArgs-identity ? x : x ,
                         ...
                     } @identity :
                         let
-                            _implementation =
+                            implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
                                         in
                                             {
                                                 options =
-                                                    options-identity
+                                                    control.options
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
@@ -381,7 +379,7 @@
                                                                                                 )
                                                                                             ] ;
                                                                                     } ;
-                                                                                imports = [ _implementation failure trip visitor ] ;
+                                                                                imports = [ implementation failure trip visitor ] ;
                                                                             } ;
                                                             testScript =
                                                                 ''
@@ -397,7 +395,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = control.implementation _implementation ;
+                                    implementation = implementation ;
                                 } ;
             } ;
 }
