@@ -21,7 +21,7 @@
                                                     options =
                                                         {
                                                             lazy-shell-application =
-                                                                identified.lib.mkOption
+                                                                lib.mkOption
                                                                     {
                                                                         default =
                                                                             {
@@ -37,7 +37,7 @@
                                                                                         {
                                                                                             mounts = mounts ;
                                                                                             name =
-                                                                                                if name == "test" then identified.config.trip "test is not a good name"
+                                                                                                if name == "test" then config.trip "test is not a good name"
                                                                                                 else name ;
                                                                                             post = post ;
                                                                                             runtime-inputs = runtime-inputs ;
@@ -45,21 +45,21 @@
                                                                                             variables = variables ;
                                                                                         } ;
                                                                                     in
-                                                                                        identified.pkgs.writeShellApplication
+                                                                                        pkgs.writeShellApplication
                                                                                             {
                                                                                                 name = parameters.name ;
                                                                                                 runtimeInputs =
                                                                                                     [
-                                                                                                        ( identified.config.failure { } )
-                                                                                                        identified.pkgs.coreutils
-                                                                                                        identified.pkgs.jq
+                                                                                                        ( config.failure { } )
+                                                                                                        pkgs.coreutils
+                                                                                                        pkgs.jq
                                                                                                         (
-                                                                                                            identified.pkgs.writeShellApplication
+                                                                                                            pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "cleanup" ;
-                                                                                                                    runtimeInputs = [ identified.pkgs.coreutils ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                     text =
-                                                                                                                        identified.config.visitor
+                                                                                                                        config.visitor
                                                                                                                             { }
                                                                                                                             {
                                                                                                                                 null =
@@ -81,10 +81,10 @@
                                                                                                                 }
                                                                                                         )
                                                                                                         (
-                                                                                                            identified.pkgs.writeShellApplication
+                                                                                                            pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "pipe-consumer" ;
-                                                                                                                    runtimeInputs = [ identified.pkgs.coreutils ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             TEMPORARY_PIPE="$1"
@@ -95,7 +95,7 @@
                                                                                                                 }
                                                                                                         )
                                                                                                         (
-                                                                                                            identified.pkgs.buildFHSUserEnv
+                                                                                                            pkgs.buildFHSUserEnv
                                                                                                                 {
                                                                                                                     extraBwrapArgs =
                                                                                                                         builtins.concatLists
@@ -114,16 +114,16 @@
                                                                                                                                                 else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
-                                                                                                                                                else if type == "memory" && read-only && ! is-directory then identified.config.trip "memory and read-only and ! directory makes no sense "
+                                                                                                                                                else if type == "memory" && read-only && ! is-directory then config.trip "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                                else if type == "null" && read-only then identified.config.trip "read-only null make no sense"
-                                                                                                                                                else if type == "null" && is-directory then identified.config.trip "directory null make no sense"
+                                                                                                                                                else if type == "null" && read-only then config.trip "read-only null make no sense"
+                                                                                                                                                else if type == "null" && is-directory then config.trip "directory null make no sense"
                                                                                                                                                 else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
-                                                                                                                                                else if type == "pipe" && read-only then identified.config.trip "read-only pipes make no sense"
-                                                                                                                                                else if type == "pipe" && is-directory then identified.config.trip "directory pipes make no sense"
+                                                                                                                                                else if type == "pipe" && read-only then config.trip "read-only pipes make no sense"
+                                                                                                                                                else if type == "pipe" && is-directory then config.trip "directory pipes make no sense"
                                                                                                                                                 else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                                else identified.config.trip "unsupported type ${ type }" ;
+                                                                                                                                                else config.trip "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
@@ -146,7 +146,7 @@
                                                                                                                                             name = "script" ;
                                                                                                                                             runtimeInputs =
                                                                                                                                                 [
-                                                                                                                                                    ( identified.config.failure { } )
+                                                                                                                                                    ( config.failure { } )
                                                                                                                                                     pkgs.coreutils
                                                                                                                                                     pkgs.findutils
                                                                                                                                                     pkgs.jq
@@ -251,7 +251,7 @@
                                                                                                         exit "$STATUS"
                                                                                                     '' ;
                                                                                             } ;
-                                                                        type = identified.lib.types.functionTo identified.lib.types.package ;
+                                                                        type = lib.types.functionTo lib.types.package ;
                                                                     } ;
                                                         } ;
                                                 } ;
@@ -302,10 +302,10 @@
                                                                                             environment.systemPackages =
                                                                                                 [
                                                                                                     (
-                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                        pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
-                                                                                                                runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         exec 123>/build/lock
@@ -315,35 +315,35 @@
                                                                                                             }
                                                                                                     )
                                                                                                     (
-                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                        pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "pre-test" ;
-                                                                                                                runtimeInputs = [ identified.pkgs.coreutils ] ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                 text = pre-test ;
                                                                                                             }
                                                                                                     )
                                                                                                     (
-                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                        pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "test-script" ;
                                                                                                                 runtimeInputs =
                                                                                                                     [
-                                                                                                                        identified.pkgs.coreutils
-                                                                                                                        identified.pkgs.diffutils
-                                                                                                                        identified.pkgs.flock
-                                                                                                                        identified.pkgs.which
+                                                                                                                        pkgs.coreutils
+                                                                                                                        pkgs.diffutils
+                                                                                                                        pkgs.flock
+                                                                                                                        pkgs.which
                                                                                                                         (
-                                                                                                                            identified.config.lazy-shell-application
+                                                                                                                            config.lazy-shell-application
                                                                                                                                 {
                                                                                                                                     mounts = mounts ;
                                                                                                                                     name = name ;
                                                                                                                                     post =
                                                                                                                                         let
                                                                                                                                             application =
-                                                                                                                                                identified.pkgs.writeShellApplication
+                                                                                                                                                pkgs.writeShellApplication
                                                                                                                                                     {
                                                                                                                                                         name = "post" ;
-                                                                                                                                                        runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                        runtimeInputs = [ ( config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                         text =
                                                                                                                                                             ''
                                                                                                                                                                 exec 123>/build/lock
