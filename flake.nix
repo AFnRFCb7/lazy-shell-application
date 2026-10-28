@@ -4,12 +4,8 @@
         { self } :
             {
                 lib =
+                    { implementation } @control :
                     {
-                        implementation
-                    } @control :
-                    {
-                        meta-identity ? x : x ,
-                        modulesPath-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x ,
                         specialArgs-identity ? x : x ,
@@ -20,8 +16,6 @@
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _meta = meta-identity meta ;
-                                        _modulesPath = modulesPath-identity modulesPath ;
                                         _options = options-identity options ;
                                         _pkgs = pkgs-identity pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
