@@ -5,8 +5,6 @@
             {
                 lib =
                     {
-                        disableModules-identity ? x : x ,
-                        freeFormType-identity ? x : x ,
                         implementation-identity ? x : x ,
                         imports-identity ? x : x ,
                         key-identity ? x : x ,
@@ -20,11 +18,9 @@
                     } @identity :
                         let
                             implementation =
-                                { config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
+                                { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _disableModules = disableModules-identity disableModules ;
-                                        _freeFormType = freeFormType-identity freeFormType ;
                                         _key = key-identity key ;
                                         _lib = lib-identity lib ;
                                         _meta = meta-identity meta ;
