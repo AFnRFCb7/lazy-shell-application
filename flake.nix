@@ -26,9 +26,7 @@
                                             if builtins.typeOf input == "lambda" then input module
                                             else if builtins.typeOf input == "null" then module
                                             else if builtins.typeOf input == "set" then module
-                                            else builtins.throw "7950598338383442" ;
-                                        # identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _lib = identified.lib ;
+                                            else builtins.throw "9691845661093396" ;
                                         _meta = meta-identity meta ;
                                         _modulesPath = modulesPath-identity modulesPath ;
                                         _options = options-identity options ;
@@ -39,7 +37,7 @@
                                                 options =
                                                     {
                                                         lazy-shell-application =
-                                                            _lib.mkOption
+                                                            identified.lib.mkOption
                                                                 {
                                                                     default =
                                                                         {
@@ -269,7 +267,7 @@
                                                                                                     exit "$STATUS"
                                                                                                 '' ;
                                                                                         } ;
-                                                                    type = _lib.types.functionTo _lib.types.package ;
+                                                                    type = identified.lib.types.functionTo identified.lib.types.package ;
                                                                 } ;
                                                     } ;
                                             } ;
@@ -307,7 +305,11 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } @module :
                                                                     let
-                                                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
+                                                                        identified =
+                                                                            if builtins.typeOf input == "lambda" then input module
+                                                                            else if builtins.typeOf input == "null" then module
+                                                                            else if builtins.typeOf input == "set" then module
+                                                                            else builtins.throw "4909555081383705" ;
                                                                         _pkgs = pkgs-identity pkgs ;
                                                                         in
                                                                             {
