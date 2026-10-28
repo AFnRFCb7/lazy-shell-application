@@ -129,7 +129,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "application" ;
-                                                                                                                                runtimeInputs = builtins.trace "5002003296376060 ${ builtins.typeOf identified }" ( runtime-inputs identified ) ;
+                                                                                                                                runtimeInputs = builtins.trace "5002003296376060 ${ builtins.typeOf identified } 5570987214733215 ${ builtins.toJSON ( builtins.attrNames identified ) } 8169904412339171" ( runtime-inputs identified ) ;
                                                                                                                                 text = text ;
                                                                                                                             }
                                                                                                                     )
