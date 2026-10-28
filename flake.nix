@@ -5,26 +5,17 @@
             {
                 lib =
                     {
-                        _class ? x : x ,
-                        _file ? x : x ,
                         config ? x : x ,
-                        disableModules ? x : x ,
-                        freeFormType ? x : x ,
                         implementation ? x : x ,
-                        imports ? x : x ,
-                        key ? x : x ,
                         lib ? x : x ,
-                        meta ? x : x ,
-                        modulesPath ? x : x ,
                         options ? x : x ,
-                        pkgs ? x : x ,
-                        specialArgs ? x : x
+                        pkgs ? x : x
                     } @identity :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } @module :
+                                { config , lib , options , pkgs , ... } @module :
                                     let
-                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( identity.lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                         in
                                             {
                                                 options =
@@ -299,7 +290,7 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } @module:
                                                                     let
-                                                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( identity.lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                                                         in
                                                                             {
                                                                                 config =
