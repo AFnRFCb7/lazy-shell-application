@@ -5,23 +5,16 @@
             {
                 lib =
                     output :
-                    {
-                        implementation-identity ? x : x ,
-                        imports-identity ? x : x ,
-                        key-identity ? x : x ,
-                        lib-identity ? x : x ,
-                        meta-identity ? x : x ,
-                        modulesPath-identity ? x : x ,
-                        options-identity ? x : x ,
-                        pkgs-identity ? x : x ,
-                        specialArgs-identity ? x : x ,
-                        ...
-                    } @input :
+                    input :
                         let
                             implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
-                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
+                                        identified =
+                                            if builtins.typeOf input == "lambda" then input module
+                                            else if builtins.typeOf input == "null" then module
+                                            else if builtins.typeOf input == "set" then module
+                                            else builtins.throw "8299711708119047" ;
                                         in
                                             {
                                                 options =
@@ -295,7 +288,11 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } @module :
                                                                     let
-                                                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
+                                                                        identified =
+                                                                            if builtins.typeOf input == "lambda" then input module
+                                                                            else if builtins.typeOf input == "null" then module
+                                                                            else if builtins.typeOf input == "set" then module
+                                                                            else builtins.throw "0265309691168084" ;
                                                                         in
                                                                             {
                                                                                 config =
