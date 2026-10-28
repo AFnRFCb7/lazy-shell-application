@@ -5,12 +5,12 @@
             {
                 lib =
                     { ... } @output :
-                    { ... } @identity :
+                    { ... } @input :
                         let
                             implementation =
                                 { ... } @module :
                                     let
-                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
+                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
                                         in
                                             {
                                                 options =
@@ -286,7 +286,7 @@
                                                             nodes.client =
                                                                 { ... } @input :
                                                                     let
-                                                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
+                                                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
                                                                         in
                                                                             {
                                                                                 config =
