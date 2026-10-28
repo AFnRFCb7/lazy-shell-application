@@ -7,7 +7,7 @@
                     { input , output } :
                         let
                             implementation =
-                                { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
+                                { ... } @module :
                                     let
                                         identified =
                                             if builtins.typeOf input == "lambda" then input module
