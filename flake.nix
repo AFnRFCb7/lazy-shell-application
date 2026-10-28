@@ -4,7 +4,7 @@
         { self } :
             {
                 lib =
-                    { options ? x : x } @control :
+                    { options ? x : x } @output :
                     { ... } @identity :
                         let
                             implementation =
@@ -14,7 +14,7 @@
                                         in
                                             {
                                                 options =
-                                                    control.options
+                                                    output.options
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
