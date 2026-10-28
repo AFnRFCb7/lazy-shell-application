@@ -24,6 +24,7 @@
                             implementation =
                                 { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } @module :
                                     let
+                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
                                         __class = identity._class _class ;
                                         __file = identity._file _file ;
                                         _config = identity.config config ;
