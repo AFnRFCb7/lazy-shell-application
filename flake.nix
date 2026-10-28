@@ -25,7 +25,6 @@
                                 { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _config = identity.config config ;
                                         _disableModules = identity.disableModules disableModules ;
                                         _freeFormType = identity.freeFormType freeFormType ;
                                         _key = identity.key key ;
@@ -57,7 +56,7 @@
                                                                                         {
                                                                                             mounts = mounts ;
                                                                                             name =
-                                                                                                if name == "test" then _config.trip "test is not a good name"
+                                                                                                if name == "test" then identified.config.trip "test is not a good name"
                                                                                                 else name ;
                                                                                             post = post ;
                                                                                             runtime-inputs = runtime-inputs ;
@@ -70,7 +69,7 @@
                                                                                                 name = parameters.name ;
                                                                                                 runtimeInputs =
                                                                                                     [
-                                                                                                        ( _config.failure { } )
+                                                                                                        ( identified.config.failure { } )
                                                                                                         _pkgs.coreutils
                                                                                                         _pkgs.jq
                                                                                                         (
@@ -79,7 +78,7 @@
                                                                                                                     name = "cleanup" ;
                                                                                                                     runtimeInputs = [ _pkgs.coreutils ] ;
                                                                                                                     text =
-                                                                                                                        _config.visitor
+                                                                                                                        identified.config.visitor
                                                                                                                             { }
                                                                                                                             {
                                                                                                                                 null =
@@ -134,16 +133,16 @@
                                                                                                                                                 else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
-                                                                                                                                                else if type == "memory" && read-only && ! is-directory then _config.trip "memory and read-only and ! directory makes no sense "
+                                                                                                                                                else if type == "memory" && read-only && ! is-directory then identified.config.trip "memory and read-only and ! directory makes no sense "
                                                                                                                                                 else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                                 else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                                else if type == "null" && read-only then _config.trip "read-only null make no sense"
-                                                                                                                                                else if type == "null" && is-directory then _config.trip "directory null make no sense"
+                                                                                                                                                else if type == "null" && read-only then identified.config.trip "read-only null make no sense"
+                                                                                                                                                else if type == "null" && is-directory then identified.config.trip "directory null make no sense"
                                                                                                                                                 else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
-                                                                                                                                                else if type == "pipe" && read-only then _config.trip "read-only pipes make no sense"
-                                                                                                                                                else if type == "pipe" && is-directory then _config.trip "directory pipes make no sense"
+                                                                                                                                                else if type == "pipe" && read-only then identified.config.trip "read-only pipes make no sense"
+                                                                                                                                                else if type == "pipe" && is-directory then identified.config.trip "directory pipes make no sense"
                                                                                                                                                 else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                                else _config.trip "unsupported type ${ type }" ;
+                                                                                                                                                else identified.config.trip "unsupported type ${ type }" ;
                                                                                                                                         in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                                 )
                                                                                                                             ] ;
@@ -166,7 +165,7 @@
                                                                                                                                             name = "script" ;
                                                                                                                                             runtimeInputs =
                                                                                                                                                 [
-                                                                                                                                                    ( _config.failure { } )
+                                                                                                                                                    ( identified.config.failure { } )
                                                                                                                                                     pkgs.coreutils
                                                                                                                                                     pkgs.findutils
                                                                                                                                                     pkgs.jq
@@ -310,7 +309,7 @@
                                                                 { config , pkgs , ... } @module :
                                                                     let
                                                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                                                        _config = identity.config config ;
+                                                                        identified.config = identity.config config ;
                                                                         _pkgs = identity.pkgs pkgs ;
                                                                         in
                                                                             {
@@ -350,7 +349,7 @@
                                                                                                                     _pkgs.flock
                                                                                                                     _pkgs.which
                                                                                                                     (
-                                                                                                                        _config.lazy-shell-application
+                                                                                                                        identified.config.lazy-shell-application
                                                                                                                             {
                                                                                                                                 mounts = mounts ;
                                                                                                                                 name = name ;
@@ -360,7 +359,7 @@
                                                                                                                                             _pkgs.writeShellApplication
                                                                                                                                                 {
                                                                                                                                                     name = "post" ;
-                                                                                                                                                    runtimeInputs = [ ( _config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                    runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
                                                                                                                                                     text =
                                                                                                                                                         ''
                                                                                                                                                             exec 123>/build/lock
