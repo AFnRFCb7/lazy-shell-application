@@ -5,12 +5,12 @@
             {
                 lib =
                     { ... } @output :
-                    { ... } @input :
+                    input :
                         let
                             implementation =
                                 { ... } @module :
                                     let
-                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
+                                        identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
                                         in
                                             builtins.mapAttrs
                                                 ( name : value : ( if builtins.hasAttr name output then builtins.getAttr name output else x : x ) value )
