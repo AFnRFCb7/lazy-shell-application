@@ -4,7 +4,7 @@
         { self } :
             {
                 lib =
-                    { input , output } :
+                    { input ? null , output ? null } :
                         let
                             implementation =
                                 { ... } @module :
@@ -134,7 +134,7 @@
                                                                                                                                     pkgs.writeShellApplication
                                                                                                                                         {
                                                                                                                                             name = "application" ;
-                                                                                                                                            runtimeInputs = runtime-inputs pkgs ;
+                                                                                                                                            runtimeInputs = runtime-inputs identified ;
                                                                                                                                             text = text ;
                                                                                                                                         }
                                                                                                                                 )
