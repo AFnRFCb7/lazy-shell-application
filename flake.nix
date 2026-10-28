@@ -297,7 +297,6 @@
                                                                 { config , pkgs , ... } @module :
                                                                     let
                                                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name input then builtins.getAttr name input else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                                                        identified.pkgs = pkgs-identity pkgs ;
                                                                         in
                                                                             {
                                                                                 config =
