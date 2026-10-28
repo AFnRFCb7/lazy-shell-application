@@ -5,7 +5,7 @@
             {
                 lib =
                     { ... } @output :
-                    { ... } @input :
+                    { ... } @identity :
                         let
                             implementation =
                                 { ... } @module :
