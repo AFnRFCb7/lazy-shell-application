@@ -4,8 +4,7 @@
         { self } :
             {
                 lib =
-                    output :
-                    input :
+                    { input , output } :
                         let
                             implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
