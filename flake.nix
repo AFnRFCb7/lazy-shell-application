@@ -130,7 +130,7 @@
                                                                                                                                 pkgs.writeShellApplication
                                                                                                                                     {
                                                                                                                                         name = "application" ;
-                                                                                                                                        runtimeInputs = runtime-inputs pkgs ;
+                                                                                                                                        runtimeInputs = runtime-inputs identified ;
                                                                                                                                         text = text ;
                                                                                                                                     }
                                                                                                                             )
