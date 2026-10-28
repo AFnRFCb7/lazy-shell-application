@@ -18,11 +18,12 @@
                         modulesPath-identity ? x : x ,
                         options-identity ? x : x ,
                         pkgs-identity ? x : x ,
-                        specialArgs-identity ? x : x
-                    } :
+                        specialArgs-identity ? x : x ,
+                        ...
+                    } @identity :
                         let
                             implementation =
-                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs } :
+                                { _class , _file , config , disableModules , freeFormType , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @modules :
                                     let
                                         __class = _class-identity _class ;
                                         __file = _file-identity _file ;
@@ -308,7 +309,7 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
-                                                                { config , pkgs , ... } :
+                                                                { config , pkgs , ... } @module :
                                                                     let
                                                                         _config = config-identity config ;
                                                                         _pkgs = pkgs-identity pkgs ;
