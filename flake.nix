@@ -15,7 +15,7 @@
                             implementation =
                                 { config , lib , options , pkgs , ... } @module :
                                     let
-                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                         in
                                             {
                                                 options =
@@ -290,7 +290,7 @@
                                                             nodes.client =
                                                                 { config , pkgs , ... } @module:
                                                                     let
-                                                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( lib module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
+                                                                        identified = builtins.map ( name : builtins.getAttr name identity ( builtins.getAttr name module ) ) ( builtins.getAttr "intersectLists" ( module.lib ) ( builtins.attrNames identity ) ( builtins.attrNames module ) ) ;
                                                                         in
                                                                             {
                                                                                 config =
