@@ -10,7 +10,10 @@
                             implementation =
                                 { ... } @module :
                                     let
-                                        identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
+                                        identified =
+                                            if builtins.typeOf input == "lambda" then input module
+                                            else if builtins.typeOf input == "null" then module
+                                            else builtins.throw "7010516846764409" ;
                                         in
                                             {
                                                 options.lazy-shell-application =
