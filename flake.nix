@@ -4,17 +4,18 @@
         { self } :
             {
                 lib =
-                    { options ? x : x } @output :
-                    { ... } @identity :
+                    { ... } @output :
+                    { ... } @input :
                         let
                             implementation =
-                                { ... } @input :
+                                { ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name input ) ; } ) ( builtins.attrNames input ) ) ;
                                         in
                                             {
                                                 options =
-                                                    output.options
+                                                    builtins.mapAttrs
+                                                        ( name : value : ( if builtins.hasAttr name output then builtins.getAttr name output else x : x ) value )
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
