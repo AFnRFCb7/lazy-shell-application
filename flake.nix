@@ -5,7 +5,9 @@
             {
                 lib =
                     {
-                        implementation-identity ? x : x ,
+                        implementation
+                    } @control :
+                    {
                         imports-identity ? x : x ,
                         key-identity ? x : x ,
                         lib-identity ? x : x ,
@@ -17,7 +19,7 @@
                         ...
                     } @identity :
                         let
-                            implementation =
+                            _implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
@@ -390,7 +392,7 @@
                                                                                                 )
                                                                                             ] ;
                                                                                     } ;
-                                                                                imports = [ failure implementation trip visitor ] ;
+                                                                                imports = [ _implementation failure trip visitor ] ;
                                                                             } ;
                                                             testScript =
                                                                 ''
@@ -406,7 +408,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = implementation-identity implementation ;
+                                    implementation = control.implementation _implementation ;
                                 } ;
             } ;
 }
