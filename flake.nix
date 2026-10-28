@@ -16,7 +16,7 @@
                         pkgs-identity ? x : x ,
                         specialArgs-identity ? x : x ,
                         ...
-                    } @identity :
+                    } @input :
                         let
                             implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
