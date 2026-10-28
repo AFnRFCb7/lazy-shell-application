@@ -129,7 +129,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "application" ;
-                                                                                                                                runtimeInputs = runtime-inputs identified ;
+                                                                                                                                runtimeInputs = builtins.trace "5002003296376060" ( runtime-inputs identified ) ;
                                                                                                                                 text = text ;
                                                                                                                             }
                                                                                                                     )
