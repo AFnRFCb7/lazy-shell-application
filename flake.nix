@@ -28,7 +28,7 @@
                                         in
                                             {
                                                 options =
-                                                    identity.options
+                                                    identified.options
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
@@ -146,7 +146,7 @@
                                                                                                                                     pkgs.writeShellApplication
                                                                                                                                         {
                                                                                                                                             name = "application" ;
-                                                                                                                                            runtimeInputs = runtime-inputs pkgs ;
+                                                                                                                                            runtimeInputs = runtime-inputs identified ;
                                                                                                                                             text = text ;
                                                                                                                                         }
                                                                                                                                 )
