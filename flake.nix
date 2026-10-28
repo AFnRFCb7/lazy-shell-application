@@ -281,7 +281,7 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
-                                                                { ... } @input :
+                                                                { ... } @module :
                                                                     let
                                                                         identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
                                                                         in
