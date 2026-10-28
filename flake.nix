@@ -18,6 +18,7 @@
                         ...
                     } @input :
                         let
+                            identity = input ;
                             implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
