@@ -5,18 +5,7 @@
             {
                 lib =
                     output :
-                    {
-                        implementation-identity ? x : x ,
-                        imports-identity ? x : x ,
-                        key-identity ? x : x ,
-                        lib-identity ? x : x ,
-                        meta-identity ? x : x ,
-                        modulesPath-identity ? x : x ,
-                        options-identity ? x : x ,
-                        pkgs-identity ? x : x ,
-                        specialArgs-identity ? x : x ,
-                        ...
-                    } @input :
+                    input :
                         let
                             identity = input ;
                             implementation =
@@ -25,7 +14,6 @@
                                         identified =
                                             if builtins.typeOf input == "lambda" then input module
                                             else if builtins.typeOf input == "null" then module
-                                            else if builtins.typeOf input == "set" then module
                                             else builtins.throw "9691845661093396" ;
                                         in
                                             {
@@ -303,7 +291,6 @@
                                                                         identified =
                                                                             if builtins.typeOf input == "lambda" then input module
                                                                             else if builtins.typeOf input == "null" then module
-                                                                            else if builtins.typeOf input == "set" then module
                                                                             else builtins.throw "4909555081383705" ;
                                                                         in
                                                                             {
