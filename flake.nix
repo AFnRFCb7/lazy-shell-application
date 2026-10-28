@@ -28,7 +28,7 @@
                                         in
                                             {
                                                 options =
-                                                    options-identity
+                                                    identity.options
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
