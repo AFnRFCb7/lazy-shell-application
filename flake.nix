@@ -28,7 +28,7 @@
                                         in
                                             {
                                                 options =
-                                                    identity.options
+                                                    identified.options
                                                         {
                                                             lazy-shell-application =
                                                                 identified.lib.mkOption
@@ -402,7 +402,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = identity.implementation implementation ;
+                                    implementation = identified.implementation implementation ;
                                 } ;
             } ;
 }
