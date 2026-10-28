@@ -4,6 +4,7 @@
         { self } :
             {
                 lib =
+                    output :
                     {
                         implementation-identity ? x : x ,
                         imports-identity ? x : x ,
