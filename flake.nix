@@ -21,9 +21,13 @@
                             implementation =
                                 { config , imports , key , lib , meta , modulesPath , options , pkgs , specialArgs , ... } @module :
                                     let
-                                        identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _key = key-identity key ;
-                                        _lib = lib-identity lib ;
+                                        identified =
+                                            if builtins.typeOf input == "lambda" then input module
+                                            else if builtins.typeOf input == "null" then module
+                                            else if builtins.typeOf input == "set" then module
+                                            else builtins.throw "7950598338383442" ;
+                                        # identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
+                                        _lib = identified.lib ;
                                         _meta = meta-identity meta ;
                                         _modulesPath = modulesPath-identity modulesPath ;
                                         _options = options-identity options ;
