@@ -27,7 +27,7 @@
                                             else if builtins.typeOf input == "null" then module
                                             else if builtins.typeOf input == "set" then module
                                             else builtins.throw "9691845661093396" ;
-                                        _pkgs = pkgs-identity pkgs ;
+                                        _pkgs = identified.pkgs ;
                                         _specialArgs = specialArgs-identity specialArgs ;
                                         in
                                             {
@@ -307,7 +307,7 @@
                                                                             else if builtins.typeOf input == "null" then module
                                                                             else if builtins.typeOf input == "set" then module
                                                                             else builtins.throw "4909555081383705" ;
-                                                                        _pkgs = pkgs-identity pkgs ;
+                                                                        _pkgs = identified.pkgs ;
                                                                         in
                                                                             {
                                                                                 config =
