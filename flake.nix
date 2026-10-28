@@ -295,93 +295,94 @@
                                                                             else if builtins.typeOf input == "set" then module
                                                                             else builtins.throw "0265309691168084" ;
                                                                         in
-                                                                            {
-                                                                                config =
-                                                                                    {
-                                                                                        environment.systemPackages =
-                                                                                            [
-                                                                                                (
-                                                                                                    identified.pkgs.writeShellApplication
-                                                                                                        {
-                                                                                                            name = "post-test" ;
-                                                                                                            runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    exec 123>/build/lock
-                                                                                                                    flock -x 123
-                                                                                                                    ${ if builtins.typeOf post-test == "null" then "" else post-test }
-                                                                                                                '' ;
-                                                                                                        }
-                                                                                                )
-                                                                                                (
-                                                                                                    identified.pkgs.writeShellApplication
-                                                                                                        {
-                                                                                                            name = "pre-test" ;
-                                                                                                            runtimeInputs = [ identified.pkgs.coreutils ] ;
-                                                                                                            text = pre-test ;
-                                                                                                        }
-                                                                                                )
-                                                                                                (
-                                                                                                    identified.pkgs.writeShellApplication
-                                                                                                        {
-                                                                                                            name = "test-script" ;
-                                                                                                            runtimeInputs =
-                                                                                                                [
-                                                                                                                    identified.pkgs.coreutils
-                                                                                                                    identified.pkgs.diffutils
-                                                                                                                    identified.pkgs.flock
-                                                                                                                    identified.pkgs.which
-                                                                                                                    (
-                                                                                                                        identified.config.lazy-shell-application
-                                                                                                                            {
-                                                                                                                                mounts = mounts ;
-                                                                                                                                name = name ;
-                                                                                                                                post =
-                                                                                                                                    let
-                                                                                                                                        application =
-                                                                                                                                            identified.pkgs.writeShellApplication
-                                                                                                                                                {
-                                                                                                                                                    name = "post" ;
-                                                                                                                                                    runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
-                                                                                                                                                    text =
-                                                                                                                                                        ''
-                                                                                                                                                            exec 123>/build/lock
-                                                                                                                                                            flock -x 123
-                                                                                                                                                            ${ if builtins.typeOf post == "null" then "" else post }
-                                                                                                                                                        '' ;
-                                                                                                                                                } ;
-                                                                                                                                        in "${ application }/bin/post" ;
-                                                                                                                                runtime-inputs = runtime-inputs ;
-                                                                                                                                text = text ;
-                                                                                                                                variables = { } ;
-                                                                                                                            }
-                                                                                                                    )
-                                                                                                                ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    mkdir --parents /build/expected
-                                                                                                                    ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
-                                                                                                                    ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
-                                                                                                                    echo ${ builtins.toString status } > /build/expected/status
-                                                                                                                    mkdir --parents /build/observed
-                                                                                                                    # shellcheck disable=SC2065
-                                                                                                                    if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
-                                                                                                                    then
-                                                                                                                        # shellcheck disable=SC2319
-                                                                                                                        STATUS="$?"
-                                                                                                                    else
-                                                                                                                        # shellcheck disable=SC2319
-                                                                                                                        STATUS="$?"
-                                                                                                                    fi
-                                                                                                                    echo "$STATUS" > /build/observed/status
-                                                                                                                    diff --recursive --unified /build/expected /build/observed
-                                                                                                                '' ;
-                                                                                                        }
-                                                                                                )
-                                                                                            ] ;
-                                                                                    } ;
-                                                                                imports = [ failure implementation trip visitor ] ;
-                                                                            } ;
+                                                                            with identified ;
+                                                                                {
+                                                                                    config =
+                                                                                        {
+                                                                                            environment.systemPackages =
+                                                                                                [
+                                                                                                    (
+                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "post-test" ;
+                                                                                                                runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        exec 123>/build/lock
+                                                                                                                        flock -x 123
+                                                                                                                        ${ if builtins.typeOf post-test == "null" then "" else post-test }
+                                                                                                                    '' ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "pre-test" ;
+                                                                                                                runtimeInputs = [ identified.pkgs.coreutils ] ;
+                                                                                                                text = pre-test ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "test-script" ;
+                                                                                                                runtimeInputs =
+                                                                                                                    [
+                                                                                                                        identified.pkgs.coreutils
+                                                                                                                        identified.pkgs.diffutils
+                                                                                                                        identified.pkgs.flock
+                                                                                                                        identified.pkgs.which
+                                                                                                                        (
+                                                                                                                            identified.config.lazy-shell-application
+                                                                                                                                {
+                                                                                                                                    mounts = mounts ;
+                                                                                                                                    name = name ;
+                                                                                                                                    post =
+                                                                                                                                        let
+                                                                                                                                            application =
+                                                                                                                                                identified.pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "post" ;
+                                                                                                                                                        runtimeInputs = [ ( identified.config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                exec 123>/build/lock
+                                                                                                                                                                flock -x 123
+                                                                                                                                                                ${ if builtins.typeOf post == "null" then "" else post }
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;
+                                                                                                                                            in "${ application }/bin/post" ;
+                                                                                                                                    runtime-inputs = runtime-inputs ;
+                                                                                                                                    text = text ;
+                                                                                                                                    variables = { } ;
+                                                                                                                                }
+                                                                                                                        )
+                                                                                                                    ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        mkdir --parents /build/expected
+                                                                                                                        ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
+                                                                                                                        ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
+                                                                                                                        echo ${ builtins.toString status } > /build/expected/status
+                                                                                                                        mkdir --parents /build/observed
+                                                                                                                        # shellcheck disable=SC2065
+                                                                                                                        if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                        then
+                                                                                                                            # shellcheck disable=SC2319
+                                                                                                                            STATUS="$?"
+                                                                                                                        else
+                                                                                                                            # shellcheck disable=SC2319
+                                                                                                                            STATUS="$?"
+                                                                                                                        fi
+                                                                                                                        echo "$STATUS" > /build/observed/status
+                                                                                                                        diff --recursive --unified /build/expected /build/observed
+                                                                                                                    '' ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                ] ;
+                                                                                        } ;
+                                                                                    imports = [ failure implementation trip visitor ] ;
+                                                                                } ;
                                                             testScript =
                                                                 ''
                                                                     client.wait_for_unit("multi-user.target")
