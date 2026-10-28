@@ -6,7 +6,7 @@
                 lib =
                     { implementation ? x : x , ... } @identity :
                         let
-                            implementation =
+                            _implementation =
                                 { config , lib , options , pkgs , ... } @module :
                                     let
                                         identified = module ;
@@ -373,7 +373,7 @@
                                                                                                 )
                                                                                             ] ;
                                                                                     } ;
-                                                                                imports = [ failure implementation trip visitor ] ;
+                                                                                imports = [ failure _implementation trip visitor ] ;
                                                                             } ;
                                                             testScript =
                                                                 ''
@@ -389,7 +389,7 @@
                                                         test = test ;
                                                         type = "lazy-shell-application" ;
                                                     } ;
-                                    implementation = identity.implementation implementation ;
+                                    implementation = identity.implementation _implementation ;
                                 } ;
             } ;
 }
