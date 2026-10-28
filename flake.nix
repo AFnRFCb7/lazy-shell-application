@@ -8,7 +8,7 @@
                     input :
                         let
                             implementation =
-                                { pkgs , ... } @module :
+                                { ... } @module :
                                     let
                                         identified = if builtins.typeOf input == "lambda" then input module else if builtins.typeOf input == "null" then module else builtins.throw "7010516846764409" ;
                                         in
@@ -129,7 +129,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "application" ;
-                                                                                                                                runtimeInputs = builtins.trace "5002003296376060 ${ builtins.typeOf identified } 5570987214733215 ${ builtins.toJSON ( builtins.attrNames identified ) } 8169904412339171 ${ builtins.typeOf identified.pkgs } 5102397487522466 ${ builtins.toJSON identified.pkgs } 4213227094729358" ( runtime-inputs identified ) ;
+                                                                                                                                runtimeInputs = builtins.trace "5002003296376060 ${ builtins.typeOf identified } 5570987214733215 ${ builtins.toJSON ( builtins.attrNames identified ) } 8169904412339171 ${ builtins.typeOf identified.pkgs } 5102397487522466 ${ builtins.typeOf identified.pkgs } 4213227094729358" ( runtime-inputs identified ) ;
                                                                                                                                 text = text ;
                                                                                                                             }
                                                                                                                     )
