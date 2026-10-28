@@ -5,16 +5,12 @@
             {
                 lib =
                     { options ? x : x } @control :
-                    {
-                        specialArgs-identity ? x : x ,
-                        ...
-                    } @identity :
+                    { ... } @identity :
                         let
                             implementation =
-                                { specialArgs , ... } @module :
+                                { ... } @module :
                                     let
                                         identified = builtins.listToAttrs ( builtins.map ( name : { name = name ; value = ( if builtins.hasAttr name identity then builtins.getAttr name identity else x : x ) ( builtins.getAttr name module ) ; } ) ( builtins.attrNames module ) ) ;
-                                        _specialArgs = specialArgs-identity specialArgs ;
                                         in
                                             {
                                                 options =
