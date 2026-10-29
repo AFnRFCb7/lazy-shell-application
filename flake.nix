@@ -7,11 +7,11 @@
                     { input ? null , output ? null } :
                         let
                             implementation =
-                                { ... } @module :
+                                { config , lib , pkgs , ... } @module :
                                     let
                                         identified =
-                                            if builtins.typeOf input == "lambda" then input ( module // { pkgs = module.config.nixpkgs.pkgs ; } )
-                                            else if builtins.typeOf input == "null" then module // { pkgs = module.config.nixpkgs.pkgs ; }
+                                            if builtins.typeOf input == "lambda" then input module
+                                            else if builtins.typeOf input == "null" then module
                                             else builtins.throw "8299711708119047" ;
                                         in
                                             with identified ;
@@ -285,11 +285,11 @@
                                                         {
                                                             name = "nixos-test" ;
                                                             nodes.client =
-                                                                { ... } @module :
+                                                                { config , pkgs , ... } @module :
                                                                     let
                                                                         identified =
-                                                                            if builtins.typeOf input == "lambda" then input ( module // { pkgs = module.config.nixpkgs.pkgs ; } )
-                                                                            else if builtins.typeOf input == "null" then module // { pkgs = module.config.nixpkgs.pkgs ; }
+                                                                            if builtins.typeOf input == "lambda" then input module ; }
+                                                                            else if builtins.typeOf input == "null" then module
                                                                             else builtins.throw "0265309691168084" ;
                                                                         in
                                                                             with identified ;
