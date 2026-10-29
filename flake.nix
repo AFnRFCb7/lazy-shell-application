@@ -299,7 +299,7 @@
                                                                                             environment.systemPackages =
                                                                                                 [
                                                                                                     (
-                                                                                                        pkgs.writeShellApplication
+                                                                                                        identified.pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
                                                                                                                 runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
