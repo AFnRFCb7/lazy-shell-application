@@ -288,7 +288,7 @@
                                                                 { config , pkgs , ... } @module :
                                                                     let
                                                                         identified =
-                                                                            if builtins.typeOf input == "lambda" then input module ; }
+                                                                            if builtins.typeOf input == "lambda" then input module }
                                                                             else if builtins.typeOf input == "null" then module
                                                                             else builtins.throw "0265309691168084" ;
                                                                         in
