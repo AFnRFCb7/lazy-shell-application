@@ -299,7 +299,7 @@
                                                                                             environment.systemPackages =
                                                                                                 [
                                                                                                     (
-                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                        builtins.trace ( "7940630040896465 ${ builtins.toJSON ( builtins.attrNames identified ) } 7073502327104908 ${ builtins.toJSON ( builtins.attrNames identified ) }" ) identified.pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
                                                                                                                 runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
