@@ -288,8 +288,8 @@
                                                                 { ... } @module :
                                                                     let
                                                                         identified =
-                                                                            if builtins.typeOf input == "lambda" then input module
-                                                                            else if builtins.typeOf input == "null" then module
+                                                                            if builtins.typeOf input == "lambda" then input ( module // { pkgs = config.nixpkgs.pkgs ; } )
+                                                                            else if builtins.typeOf input == "null" then module // { pkgs = config.nixpkgs.pkgs ; }
                                                                             else builtins.throw "0265309691168084" ;
                                                                         in
                                                                             with identified ;
