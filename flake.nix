@@ -302,7 +302,7 @@
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
-                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                                runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         exec 123>/build/lock
