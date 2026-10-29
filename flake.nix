@@ -299,10 +299,10 @@
                                                                                             environment.systemPackages =
                                                                                                 [
                                                                                                     (
-                                                                                                        builtins.trace ( "7940630040896465 ${ builtins.toJSON ( builtins.attrNames identified ) } 7073502327104908 ${ builtins.toJSON ( builtins.attrNames module ) }" ) identified.pkgs.writeShellApplication
+                                                                                                        identified.pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
-                                                                                                                runtimeInputs = [ identified.pkgs.coreutils identified.pkgs.flock ] ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         exec 123>/build/lock
