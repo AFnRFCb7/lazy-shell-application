@@ -288,7 +288,7 @@
                                             obviated-by ,
                                             post-test ,
                                             pre-test ,
-                                            visitor ?
+                                            trip ?
                                                 { pkgs , ... } @module :
                                                     let
                                                         identified =
