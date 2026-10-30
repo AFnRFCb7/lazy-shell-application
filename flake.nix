@@ -288,8 +288,23 @@
                                             obviated-by ,
                                             post-test ,
                                             pre-test ,
-                                            trip ,
-                                            visitor
+                                            trip ?
+                                                { pkgs , ... } @module :
+                                                    let
+                                                        identified =
+                                                            if builtins.typeOf input == "lambda" then input module
+                                                            else if builtins.typeOf input == "null" then module
+                                                            else builtins.throw "3089158225937633" ;
+                                                        in
+                                                            with identified ;
+                                                                {
+                                                                    options.failure =
+                                                                        lib.mkOption
+                                                                            {
+                                                                                default = ignore : ignore : value : builtins.toJSON value ;
+                                                                                type = lib.types.functionTo ( lib.types.functionTo ( lib.types.functionTo lib.types.anything ) ) ;
+                                                                            } ;
+                                                                }
                                         } :
                                         {
                                             mounts ,
