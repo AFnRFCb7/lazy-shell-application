@@ -301,8 +301,8 @@
                                                                     options.trip =
                                                                         lib.mkOption
                                                                             {
-                                                                                default = { ... } : { ... } : builtins.throw "0803317424484263" ;
-                                                                                type = lib.types.functionTo ( lib.types.functionTo ( lib.types.functionTo lib.types.anything ) ) ;
+                                                                                default = uuid : builtins.toJSON uuid ;
+                                                                                type = lib.types.functionTo lib.types.anything ;
                                                                             } ;
                                                                 } ,
                                             visitor ?
