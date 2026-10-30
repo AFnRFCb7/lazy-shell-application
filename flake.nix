@@ -288,7 +288,24 @@
                                             obviated-by ,
                                             post-test ,
                                             pre-test ,
-                                            trip ?
+                                            visitor ?
+                                                { pkgs , ... } @module :
+                                                    let
+                                                        identified =
+                                                            if builtins.typeOf input == "lambda" then input module
+                                                            else if builtins.typeOf input == "null" then module
+                                                            else builtins.throw "6352003207623920" ;
+                                                        in
+                                                            with identified ;
+                                                                {
+                                                                    options.trip =
+                                                                        lib.mkOption
+                                                                            {
+                                                                                default = { ... } : { ... } : builtins.throw "0803317424484263" ;
+                                                                                type = lib.types.functionTo ( lib.types.functionTo ( lib.types.functionTo lib.types.anything ) ) ;
+                                                                            } ;
+                                                                } ,
+                                            visitor ?
                                                 { pkgs , ... } @module :
                                                     let
                                                         identified =
@@ -298,7 +315,7 @@
                                                         in
                                                             with identified ;
                                                                 {
-                                                                    options.failure =
+                                                                    options.visitor =
                                                                         lib.mkOption
                                                                             {
                                                                                 default = ignore : ignore : value : builtins.toJSON value ;
