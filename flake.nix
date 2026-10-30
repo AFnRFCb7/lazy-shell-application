@@ -34,7 +34,7 @@
                                                                                     {
                                                                                         mounts = mounts ;
                                                                                         name =
-                                                                                            if name == "test" then identified.config.trip "test is not a good name"
+                                                                                            if name == "test" then config.trip "test is not a good name"
                                                                                             else name ;
                                                                                         post = post ;
                                                                                         runtime-inputs = runtime-inputs ;
@@ -47,7 +47,7 @@
                                                                                             name = parameters.name ;
                                                                                             runtimeInputs =
                                                                                                 [
-                                                                                                    ( identified.config.failure { } )
+                                                                                                    ( config.failure { } )
                                                                                                     pkgs.coreutils
                                                                                                     pkgs.jq
                                                                                                     (
@@ -111,16 +111,16 @@
                                                                                                                                             else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                             else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
                                                                                                                                             else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
-                                                                                                                                            else if type == "memory" && read-only && ! is-directory then identified.config.trip "memory and read-only and ! directory makes no sense "
+                                                                                                                                            else if type == "memory" && read-only && ! is-directory then config.trip "memory and read-only and ! directory makes no sense "
                                                                                                                                             else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
                                                                                                                                             else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
-                                                                                                                                            else if type == "null" && read-only then identified.config.trip "read-only null make no sense"
-                                                                                                                                            else if type == "null" && is-directory then identified.config.trip "directory null make no sense"
+                                                                                                                                            else if type == "null" && read-only then config.trip "read-only null make no sense"
+                                                                                                                                            else if type == "null" && is-directory then config.trip "directory null make no sense"
                                                                                                                                             else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
-                                                                                                                                            else if type == "pipe" && read-only then identified.config.trip "read-only pipes make no sense"
-                                                                                                                                            else if type == "pipe" && is-directory then identified.config.trip "directory pipes make no sense"
+                                                                                                                                            else if type == "pipe" && read-only then config.trip "read-only pipes make no sense"
+                                                                                                                                            else if type == "pipe" && is-directory then config.trip "directory pipes make no sense"
                                                                                                                                             else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
-                                                                                                                                            else identified.config.trip "unsupported type ${ type }" ;
+                                                                                                                                            else config.trip "unsupported type ${ type }" ;
                                                                                                                                     in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
                                                                                                                             )
                                                                                                                         ] ;
@@ -143,7 +143,7 @@
                                                                                                                                         name = "script" ;
                                                                                                                                         runtimeInputs =
                                                                                                                                             [
-                                                                                                                                                ( identified.config.failure { } )
+                                                                                                                                                ( config.failure { } )
                                                                                                                                                 pkgs.coreutils
                                                                                                                                                 pkgs.findutils
                                                                                                                                                 pkgs.jq
@@ -325,7 +325,7 @@
                                                                                             environment.systemPackages =
                                                                                                 [
                                                                                                     (
-                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                        pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "post-test" ;
                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
