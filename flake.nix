@@ -56,7 +56,7 @@
                                                                                                                 name = "cleanup" ;
                                                                                                                 runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                 text =
-                                                                                                                    ( builtins.trace "3997913662320744 ${ builtins.toJSON ( builtins.sort ( a : b : a < b ) ( builtins.attrNames config ) ) }" config.visitor )
+                                                                                                                    config.visitor
                                                                                                                         { }
                                                                                                                         {
                                                                                                                             null =
