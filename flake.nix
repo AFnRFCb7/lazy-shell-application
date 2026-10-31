@@ -216,7 +216,7 @@
                                                                                                     then
                                                                                                         jq \
                                                                                                             --null-input \
-                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) ) } \
+                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
                                                                                                             --args \
                                                                                                             '{
                                                                                                                 "arguments" : $ARGS.positional ,
@@ -228,7 +228,7 @@
                                                                                                         jq \
                                                                                                             --null-input \
                                                                                                             --arg STANDARD_INPUT "$STANDARD_INPUT" \
-                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }'' ) parameters.variables ) ) } \
+                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
                                                                                                             --args \
                                                                                                             '{
                                                                                                                 "arguments" : $ARGS.positional ,
