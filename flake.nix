@@ -221,7 +221,7 @@
                                                                                                             '{
                                                                                                                 "arguments" : $ARGS.positional ,
                                                                                                                 "inputs" : { } ,
-                                                                                                                "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ name } ,'' ) parameters.variables ) ) } }
+                                                                                                                "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
                                                                                                             }' -- "$@" > "$INPUT_FILE"
                                                                                                     else
                                                                                                         STANDARD_INPUT="$( cat )" || failure 6712938899436674
