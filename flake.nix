@@ -95,7 +95,7 @@
                                                                                                                             string =
                                                                                                                                 path : value :
                                                                                                                                     ''
-                                                                                                                                        nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1
+                                                                                                                                        nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
                                                                                                                                         # rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                    '' ;
                                                                                                                         }
