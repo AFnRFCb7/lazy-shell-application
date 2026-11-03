@@ -90,8 +90,6 @@
                                                                                                                                 path : value :
                                                                                                                                     ''
                                                                                                                                         true
-                                                                                                                                        # rm --force "$INPUT_FILE" "$OUTPUT_FILE"
-                                                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''# rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                     '' ;
                                                                                                                             string =
                                                                                                                                 path : value :
