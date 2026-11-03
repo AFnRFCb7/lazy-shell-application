@@ -53,7 +53,7 @@
                                                                                                     (
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
-                                                                                                                name = "cleanup" ;
+                                                                                                                name = "cleanup2" ;
                                                                                                                 runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                 text =
                                                                                                                     config.visitor
@@ -64,6 +64,33 @@
                                                                                                                                     ''
                                                                                                                                         rm --force "$INPUT_FILE" "$OUTPUT_FILE"
                                                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                    '' ;
+                                                                                                                            string =
+                                                                                                                                path : value :
+                                                                                                                                    ''
+                                                                                                                                        nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1
+                                                                                                                                        rm --force "$INPUT_FILE" "$OUTPUT_FILE"
+                                                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { delete ? true , source ? null , type , ... } : if type == "temporary" && delete then [ ''# shellcheck disable=SC2154'' ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                                                   '' ;
+                                                                                                                        }
+                                                                                                                        post ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "cleanup" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                text =
+                                                                                                                    config.visitor
+                                                                                                                        { }
+                                                                                                                        {
+                                                                                                                            null =
+                                                                                                                                path : value :
+                                                                                                                                    ''
+                                                                                                                                        rm --force "$INPUT_FILE" "$OUTPUT_FILE"
+                                                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "temporary" then [ ''# shellcheck disable=SC2154'' ''# rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                                                     '' ;
                                                                                                                             string =
                                                                                                                                 path : value :
