@@ -53,34 +53,6 @@
                                                                                                     (
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
-                                                                                                                name = "cleanup" ;
-                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                                text =
-                                                                                                                    let
-                                                                                                                        statements =
-                                                                                                                            config.visitor
-                                                                                                                                { }
-                                                                                                                                {
-                                                                                                                                    null =
-                                                                                                                                        path : value :
-                                                                                                                                            ''
-                                                                                                                                                true
-                                                                                                                                            '' ;
-                                                                                                                                    string =
-                                                                                                                                        path : value :
-                                                                                                                                            ''
-                                                                                                                                                true
-                                                                                                                                                nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
-                                                                                                                                                # rm --force "$INPUT_FILE" "$OUTPUT_FILE"
-                                                                                                                                           '' ;
-                                                                                                                                }
-                                                                                                                                post ;
-                                                                                                                        in builtins.concatStringsSep "/n" statements ;
-                                                                                                            }
-                                                                                                    )
-                                                                                                    (
-                                                                                                        pkgs.writeShellApplication
-                                                                                                            {
                                                                                                                 name = "pipe-consumer" ;
                                                                                                                 runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                 text =
@@ -202,52 +174,67 @@
                                                                                                     )
                                                                                                 ] ;
                                                                                             text =
-                                                                                                ''
-                                                                                                    INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
-                                                                                                    export INPUT_FILE
-                                                                                                    OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
-                                                                                                    export OUTPUT_FILE
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == true then [ ''mkdir --parents "${ source }"'' ] else [ ] ) mounts ) ) ) }
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == false then [ ''DIRECTORY="$( dirname ${ source } )" || failure 4036755818456657'' ''if [[ ! -d "$DIRECTORY" ]] ; then mkdir --parents "$DIRECTORY" ; fi'' ''touch ${ source }'' ] else [ ] ) mounts ) ) ) }
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --dry-run )" || failure 8929529915872102 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''pipe-consumer "${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }" ${ builtins.toString source }'' ] else [ ] ) mounts ) ) ) }
-                                                                                                    trap cleanup EXIT
-                                                                                                    if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
-                                                                                                    then
-                                                                                                        jq \
-                                                                                                            --null-input \
-                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
-                                                                                                            --args \
-                                                                                                            '{
-                                                                                                                "arguments" : $ARGS.positional ,
-                                                                                                                "inputs" : { } ,
-                                                                                                                "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''VAR_${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
-                                                                                                            }' -- "$@" > "$INPUT_FILE"
-                                                                                                    else
-                                                                                                        STANDARD_INPUT="$( cat )" || failure 6712938899436674
-                                                                                                        jq \
-                                                                                                            --null-input \
-                                                                                                            --arg STANDARD_INPUT "$STANDARD_INPUT" \
-                                                                                                            ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
-                                                                                                            --args \
-                                                                                                            '{
-                                                                                                                "arguments" : $ARGS.positional ,
-                                                                                                                "inputs" :
-                                                                                                                    {
-                                                                                                                        "standard" : $STANDARD_INPUT
-                                                                                                                    } ,
-                                                                                                                "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
-                                                                                                            }' -- "$@" > "$INPUT_FILE"
-                                                                                                    fi
-                                                                                                    user-environment
-                                                                                                    STANDARD_ERROR="$( jq --raw-output '.outputs.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
-                                                                                                    echo -n "$STANDARD_ERROR" >&2
-                                                                                                    STANDARD_OUTPUT="$( jq --raw-output '.outputs.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
-                                                                                                    echo -n "$STANDARD_OUTPUT"
-                                                                                                    STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
-                                                                                                    exit "$STATUS"
-                                                                                                '' ;
+                                                                                                let
+                                                                                                    statements =
+                                                                                                        config.visitor
+                                                                                                            { }
+                                                                                                            {
+                                                                                                                string =
+                                                                                                                    path : value :
+                                                                                                                        ''
+                                                                                                                            nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
+                                                                                                                       '' ;
+                                                                                                            }
+                                                                                                            post ;
+                                                                                                    in
+                                                                                                        ''
+                                                                                                            INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
+                                                                                                            export INPUT_FILE
+                                                                                                            OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
+                                                                                                            export OUTPUT_FILE
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == true then [ ''mkdir --parents "${ source }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == false then [ ''DIRECTORY="$( dirname ${ source } )" || failure 4036755818456657'' ''if [[ ! -d "$DIRECTORY" ]] ; then mkdir --parents "$DIRECTORY" ; fi'' ''touch ${ source }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --dry-run )" || failure 8929529915872102 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''pipe-consumer "${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }" ${ builtins.toString source }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
+                                                                                                            then
+                                                                                                                jq \
+                                                                                                                    --null-input \
+                                                                                                                    ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
+                                                                                                                    --args \
+                                                                                                                    '{
+                                                                                                                        "arguments" : $ARGS.positional ,
+                                                                                                                        "inputs" : { } ,
+                                                                                                                        "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''VAR_${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
+                                                                                                                    }' -- "$@" > "$INPUT_FILE"
+                                                                                                            else
+                                                                                                                STANDARD_INPUT="$( cat )" || failure 6712938899436674
+                                                                                                                jq \
+                                                                                                                    --null-input \
+                                                                                                                    --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                                                                    ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
+                                                                                                                    --args \
+                                                                                                                    '{
+                                                                                                                        "arguments" : $ARGS.positional ,
+                                                                                                                        "inputs" :
+                                                                                                                            {
+                                                                                                                                "standard" : $STANDARD_INPUT
+                                                                                                                            } ,
+                                                                                                                        "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
+                                                                                                                    }' -- "$@" > "$INPUT_FILE"
+                                                                                                            fi
+                                                                                                            user-environment
+                                                                                                            STANDARD_ERROR="$( jq --raw-output '.outputs.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
+                                                                                                            echo -n "$STANDARD_ERROR" >&2
+                                                                                                            STANDARD_OUTPUT="$( jq --raw-output '.outputs.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
+                                                                                                            echo -n "$STANDARD_OUTPUT"
+                                                                                                            STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
+                                                                                                            ${ builtins.concatStringsSep "/" statements }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            exit "$STATUS"
+                                                                                                        '' ;
                                                                                         } ;
                                                                     type = lib.types.functionTo lib.types.package ;
                                                                 } ;
