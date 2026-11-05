@@ -375,7 +375,7 @@
                                                                                                                                                                 ${ if builtins.typeOf post == "null" then "" else post }
                                                                                                                                                             '' ;
                                                                                                                                                     } ;
-                                                                                                                                            in "${ application }/bin/post" ;
+                                                                                                                                            in [ "${ application }/bin/post" ] ;
                                                                                                                                     runtime-inputs = runtime-inputs ;
                                                                                                                                     text = text ;
                                                                                                                                     variables = { } ;
