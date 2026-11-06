@@ -199,16 +199,20 @@
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''pipe-consumer "${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }" ${ builtins.toString source }'' ] else [ ] ) mounts ) ) ) }
                                                                                                             if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
                                                                                                             then
+                                                                                                                PROCESS_ID="$PPID"
                                                                                                                 jq \
                                                                                                                     --null-input \
+                                                                                                                    --argjson PROCESS_ID "$PROCESS_ID" \
                                                                                                                     ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
                                                                                                                     --args \
                                                                                                                     '{
                                                                                                                         "arguments" : $ARGS.positional ,
                                                                                                                         "inputs" : { } ,
+                                                                                                                        "process-id" : $PROCESS_ID ,
                                                                                                                         "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''"var_${ builtins.hashString "sha512" name }" : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
                                                                                                                     }' -- "$@" > "$INPUT_FILE"
                                                                                                             else
+                                                                                                                PROCESS_ID="$( ps -o ppid= -p "$PPID" )" || failure 4813128730992465
                                                                                                                 STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                                 jq \
                                                                                                                     --null-input \
@@ -221,6 +225,7 @@
                                                                                                                             {
                                                                                                                                 "standard" : $STANDARD_INPUT
                                                                                                                             } ,
+                                                                                                                        "process-id" : $PROCESS_ID ,
                                                                                                                         "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''"var_${ builtins.hashString name }" : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
                                                                                                                     }' -- "$@" > "$INPUT_FILE"
                                                                                                             fi
