@@ -72,8 +72,8 @@
                                                                                                                     builtins.concatLists
                                                                                                                         [
                                                                                                                             [
-                                                                                                                                "--ro-bind" "$INPUT_FILE" "/input"
-                                                                                                                                "--bind" "$OUTPUT_FILE" "/output"
+                                                                                                                                "--ro-bind" "$INPUT_FILE" "/input.json"
+                                                                                                                                "--bind" "$OUTPUT_FILE" "/output.json"
                                                                                                                                 "--tmpfs" "/private"
                                                                                                                             ]
                                                                                                                             (
@@ -133,13 +133,13 @@
                                                                                                                                                     done
                                                                                                                                                 fi
                                                                                                                                                 mapfile -t ARGUMENTS < <(
-                                                                                                                                                    jq --raw-output '.arguments[]' /input
+                                                                                                                                                    jq --raw-output '.arguments[]' /input.json
                                                                                                                                                 )
-                                                                                                                                                ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name }="$( jq --raw-output '.variables.VAR_${ builtins.hashString "sha512" name }' /input )" || failure 9367334832748350'' ) variables ) ) }
+                                                                                                                                                ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name }="$( jq --raw-output '.variables.VAR_${ builtins.hashString "sha512" name }' /input.json )" || failure 9367334832748350'' ) variables ) ) }
                                                                                                                                                 ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''export ${ name }'' ) variables ) ) }
-                                                                                                                                                if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input > /private/exit-status
+                                                                                                                                                if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
                                                                                                                                                 then
-                                                                                                                                                    STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input )" || failure 7828132754944749
+                                                                                                                                                    STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
                                                                                                                                                     if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
                                                                                                                                                     then
                                                                                                                                                         STATUS="$?"
@@ -166,7 +166,7 @@
                                                                                                                                                                 "standard-output" : $STANDARD_OUTPUT
                                                                                                                                                             } ,
                                                                                                                                                         "status" : $STATUS
-                                                                                                                                                    }' > /output
+                                                                                                                                                    }' > /output.json
                                                                                                                                             '' ;
                                                                                                                                     }
                                                                                                                             )
