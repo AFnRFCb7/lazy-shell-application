@@ -217,7 +217,7 @@
                                                                                                                 STANDARD_INPUT="$( cat )" || failure 6712938899436674
                                                                                                                 jq \
                                                                                                                     --null-input \
-                                                                                                                    --argjson PROCESS_PID "$PROCESS_ID" \
+                                                                                                                    --argjson PROCESS_ID "$PROCESS_ID" \
                                                                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
                                                                                                                     ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
                                                                                                                     --args \
