@@ -74,6 +74,8 @@
                                                                                                                             [
                                                                                                                                 "--ro-bind" "$INPUT_FILE" "/input.json"
                                                                                                                                 "--bind" "$OUTPUT_FILE" "/output.json"
+                                                                                                                                "--bind" "$EXPORT_TO_POST_LOCK" "/export-to-post.lock"
+                                                                                                                                "--bind" "$EXPORT_TO_POST_DIRECTORY" "/export-to-post"
                                                                                                                                 "--tmpfs" "/private"
                                                                                                                             ]
                                                                                                                             (
@@ -109,6 +111,20 @@
                                                                                                                                         name = "application" ;
                                                                                                                                         runtimeInputs = runtime-inputs ( identified // { pkgs = pkgs ; } ) ;
                                                                                                                                         text = text ;
+                                                                                                                                    }
+                                                                                                                            )
+                                                                                                                            (
+                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                    {
+                                                                                                                                        name = "export-to-post" ;
+                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                        text =
+                                                                                                                                            ''
+                                                                                                                                                exec 162>/export-to-post.lock
+                                                                                                                                                flock -x 162
+                                                                                                                                                NAME="$1"
+                                                                                                                                                cat > "/export-to-post/$NAME"
+                                                                                                                                            '' ;
                                                                                                                                     }
                                                                                                                             )
                                                                                                                             (
@@ -193,6 +209,10 @@
                                                                                                             export INPUT_FILE
                                                                                                             OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
                                                                                                             export OUTPUT_FILE
+                                                                                                            EXPORT_TO_POST_LOCK="$( mktemp --suffix ".lock" )" || failure 8799907609982199
+                                                                                                            export EXPORT_TO_POST_LOCK
+                                                                                                            EXPORT_TO_POST_DIRECTORY="$( mktemp --directory )" || failure 0726069225095432
+                                                                                                            export EXPORT_TO_POST_DIRECTORY
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == true then [ ''mkdir --parents "${ source }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == false then [ ''DIRECTORY="$( dirname ${ source } )" || failure 4036755818456657'' ''if [[ ! -d "$DIRECTORY" ]] ; then mkdir --parents "$DIRECTORY" ; fi'' ''touch ${ source }'' ] else [ ] ) mounts ) ) ) }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --dry-run )" || failure 8929529915872102 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
@@ -237,6 +257,18 @@
                                                                                                             STANDARD_OUTPUT="$( jq --raw-output '.outputs.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
                                                                                                             echo -n "$STANDARD_OUTPUT"
                                                                                                             STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
+                                                                                                            while IFS= read -r FILE
+                                                                                                            do
+                                                                                                                NAME="$( basename "$FILE" )" || failure 8543950787048380
+                                                                                                                VALUE_WITH_PERIOD="$( cat "$FILE"; printf '.' )"
+                                                                                                                VALUE="${ "$" }{VALUE_WITH_PERIOD%.}"
+                                                                                                                export "$NAME=$VALUE"
+                                                                                                            done < <(
+                                                                                                                find "$EXPORT_TO_POST_DIRECTORY" \
+                                                                                                                    -mindepth 1 \
+                                                                                                                    -maxdepth 1 \
+                                                                                                                    -type f
+                                                                                                            )
                                                                                                             ${ builtins.concatStringsSep "/" statements }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
