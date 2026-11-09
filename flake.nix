@@ -199,15 +199,8 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
-                                                                                                                            echo 3620173588760408 ${ value }  "INDEX=$INDEX" >> /build/post
-                                                                                                                            # shellcheck disable=SC2129,SC2050
-                                                                                                                            if [[ ${ value } == "/build/resources/release/INDEX" ]]
-                                                                                                                            then
-                                                                                                                                echo 0625107475043502 >&2
-                                                                                                                                cat ${ value } >&2
-                                                                                                                            fi
-                                                                                                                            nohup nice --adjustment 19 "${ value }" >> /build/post 2>&1 || true
-                                                                                                                       '' ;
+                                                                                                                            nohup nice --adjustment 19 "${ value }" >> /dev/null 2>&1 || true
+                                                                                                                        '' ;
                                                                                                             }
                                                                                                             post ;
                                                                                                     in
