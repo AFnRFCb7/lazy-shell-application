@@ -199,7 +199,7 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
-                                                                                                                            nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
+                                                                                                                            nohup nice --adjustment 19 "${ value }" >> /build/post 2>&1 || true
                                                                                                                        '' ;
                                                                                                             }
                                                                                                             post ;
