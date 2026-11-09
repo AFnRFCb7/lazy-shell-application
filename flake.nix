@@ -199,17 +199,14 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
-                                                                                                                            echo 3620173588760408 ${ value } >> /build/post
-                                                                                                                            echo 5722018542133271 "INDEX=$INDEX" >> /build/post
+                                                                                                                            echo 3620173588760408 ${ value }  "INDEX=$INDEX" >> /build/post
+                                                                                                                            # shellcheck disable=SC2129,SC2050
                                                                                                                             if [[ ${ value } == "/build/resources/release/INDEX" ]]
                                                                                                                             then
                                                                                                                                 echo 0625107475043502 >&2
                                                                                                                                 cat ${ value } >&2
-                                                                                                                                echo 8174456388994325
                                                                                                                             fi
-                                                                                                                            echo 8693528743396531 >> /build/post
                                                                                                                             nohup nice --adjustment 19 "${ value }" >> /build/post 2>&1 || true
-                                                                                                                            echo 3006601972365841 ${ value } >> /build/post
                                                                                                                        '' ;
                                                                                                             }
                                                                                                             post ;
