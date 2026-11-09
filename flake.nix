@@ -199,7 +199,9 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
+                                                                                                                            echo 3620173588760408 ${ value } >> /build/post
                                                                                                                             nohup nice --adjustment 19 "${ value }" >> /build/post 2>&1 || true
+                                                                                                                            echo 3006601972365841 ${ value } >> /build/post
                                                                                                                        '' ;
                                                                                                             }
                                                                                                             post ;
