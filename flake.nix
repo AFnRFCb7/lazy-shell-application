@@ -269,7 +269,9 @@
                                                                                                                     -maxdepth 1 \
                                                                                                                     -type f
                                                                                                             )
-                                                                                                            ${ builtins.concatStringsSep "/" statements }
+                                                                                                            rm "$EXPORT_TO_POST_LOCK"
+                                                                                                            rm --recursive --force "$EXPORT_TO_POST_DIRECTORY"
+                                                                                                            ${ builtins.concatStringsSep "\n" statements }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
                                                                                                             exit "$STATUS"
