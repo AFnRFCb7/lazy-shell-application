@@ -199,12 +199,12 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
-                                                                                                                            echo 0098891674255104 "${ value }" >&2
-                                                                                                                            if nohup nice --adjustment 19 "${ value }" > /build/post 2>&1 &
+                                                                                                                            echo 0098891674255104 "${ value }" >> /build/post
+                                                                                                                            if nohup nice --adjustment 19 "${ value }" >> /build/post 2>&1 &
                                                                                                                             then
-                                                                                                                                echo 5116776858643291 >&2
+                                                                                                                                echo 5116776858643291 >> /build/post
                                                                                                                             else
-                                                                                                                                echo 6082514752040168 >&2
+                                                                                                                                echo 6082514752040168 >> /build/post
                                                                                                                             fi
                                                                                                                         '' ;
                                                                                                             }
