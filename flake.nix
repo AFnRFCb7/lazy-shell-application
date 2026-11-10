@@ -199,8 +199,9 @@
                                                                                                                 string =
                                                                                                                     path : value :
                                                                                                                         ''
+                                                                                                                            echo 0098891674255104 "${ value }" >&2
                                                                                                                             nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
-                                                                                                                       '' ;
+                                                                                                                        '' ;
                                                                                                             }
                                                                                                             post ;
                                                                                                     in
