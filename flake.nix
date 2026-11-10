@@ -200,7 +200,12 @@
                                                                                                                     path : value :
                                                                                                                         ''
                                                                                                                             echo 0098891674255104 "${ value }" >&2
-                                                                                                                            nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 || true
+                                                                                                                            if nohup nice --adjustment 19 "${ value }" > /build/post 2>&1 &
+                                                                                                                            then
+                                                                                                                                echo 5116776858643291 >&2
+                                                                                                                            else
+                                                                                                                                echo 6082514752040168 >&2
+                                                                                                                            fi
                                                                                                                         '' ;
                                                                                                             }
                                                                                                             post ;
