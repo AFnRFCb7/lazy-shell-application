@@ -1,0 +1,431 @@
+{
+    inputs = { } ;
+    outputs =
+        { self } :
+            {
+                lib =
+                    { input ? null , output ? null } :
+                        let
+                            implementation =
+                                { config , lib , pkgs , ... } @module :
+                                    let
+                                        identified =
+                                            if builtins.typeOf input == "lambda" then input module
+                                            else if builtins.typeOf input == "null" then module
+                                            else builtins.throw "8299711708119047" ;
+                                        in
+                                            {
+                                                options =
+                                                    {
+                                                        lazy-shell-application =
+                                                            lib.mkOption
+                                                                {
+                                                                    default =
+                                                                        {
+                                                                            mounts ,
+                                                                            name ,
+                                                                            post ,
+                                                                            runtime-inputs ,
+                                                                            text ,
+                                                                            variables
+                                                                        } :
+                                                                            let
+                                                                                parameters =
+                                                                                    {
+                                                                                        mounts = mounts ;
+                                                                                        name =
+                                                                                            if name == "test" then identified.config.trip "test is not a good name"
+                                                                                            else name ;
+                                                                                        post = post ;
+                                                                                        runtime-inputs = runtime-inputs ;
+                                                                                        text = text ;
+                                                                                        variables = variables ;
+                                                                                    } ;
+                                                                                in
+                                                                                    pkgs.writeShellApplication
+                                                                                        {
+                                                                                            name = parameters.name ;
+                                                                                            runtimeInputs =
+                                                                                                [
+                                                                                                    ( identified.config.failure { } )
+                                                                                                    pkgs.coreutils
+                                                                                                    pkgs.jq
+                                                                                                    pkgs.procps
+                                                                                                    (
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "pipe-consumer" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        TEMPORARY_PIPE="$1"
+                                                                                                                        CHANNEL="$2"
+                                                                                                                        mkfifo "$TEMPORARY_PIPE"
+                                                                                                                        nohup cat "$TEMPORARY_PIPE" >&"$CHANNEL" > /dev/null >&2 &
+                                                                                                                    '' ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        pkgs.buildFHSUserEnv
+                                                                                                            {
+                                                                                                                extraBwrapArgs =
+                                                                                                                    builtins.concatLists
+                                                                                                                        [
+                                                                                                                            [
+                                                                                                                                "--ro-bind" "$INPUT_FILE" "/input.json"
+                                                                                                                                "--bind" "$OUTPUT_FILE" "/output.json"
+                                                                                                                                "--bind" "$EXPORT_TO_POST_LOCK" "/export-to-post.lock"
+                                                                                                                                "--bind" "$EXPORT_TO_POST_DIRECTORY" "/export-to-post"
+                                                                                                                                "--tmpfs" "/private"
+                                                                                                                            ]
+                                                                                                                            (
+                                                                                                                                let
+                                                                                                                                    mapper =
+                                                                                                                                        name : { delete ? true , is-directory ? true , read-only ? false , source ? null , type } :
+                                                                                                                                            if type == "bind" && read-only then [ "--ro-bind" source "/mounts/${ name }" ]
+                                                                                                                                            else if type == "bind" && ! read-only then [ "--bind" source "/mounts/${ name }" ]
+                                                                                                                                            else if type == "temporary" && read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                            else if type == "temporary" && ! read-only then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/mounts/${ name }" ]
+                                                                                                                                            else if type == "memory" && read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" "--remount-ro" "/mounts/${ name }" ]
+                                                                                                                                            else if type == "memory" && read-only && ! is-directory then identified.config.trip "memory and read-only and ! directory makes no sense "
+                                                                                                                                            else if type == "memory" && ! read-only && is-directory then [ "--tmpfs" "/mounts/${ name }" ]
+                                                                                                                                            else if type == "memory" && ! read-only && ! is-directory then [ "--tmpfs" "/memory/${ name }" ]
+                                                                                                                                            else if type == "null" && read-only then identified.config.trip "read-only null make no sense"
+                                                                                                                                            else if type == "null" && is-directory then identified.config.trip "directory null make no sense"
+                                                                                                                                            else if type == "null" then [ "--bind" ''${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }'' "/dev/null" ]
+                                                                                                                                            else if type == "pipe" && read-only then identified.config.trip "read-only pipes make no sense"
+                                                                                                                                            else if type == "pipe" && is-directory then identified.config.trip "directory pipes make no sense"
+                                                                                                                                            else if type == "pipe" then [ ''--bind ''$TEMPORARY_${ builtins.hashString "sha512" name }'' "/mount/${ name }" ]
+                                                                                                                                            else identified.config.trip "unsupported type ${ type }" ;
+                                                                                                                                    in builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs mapper mounts ) )
+                                                                                                                            )
+                                                                                                                        ] ;
+                                                                                                                name = "user-environment" ;
+                                                                                                                runScript = "script" ;
+                                                                                                                targetPkgs =
+                                                                                                                    pkgs :
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                    {
+                                                                                                                                        name = "application" ;
+                                                                                                                                        runtimeInputs = runtime-inputs ( identified // { pkgs = pkgs ; } ) ;
+                                                                                                                                        text = text ;
+                                                                                                                                    }
+                                                                                                                            )
+                                                                                                                            (
+                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                    {
+                                                                                                                                        name = "export-to-post" ;
+                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                        text =
+                                                                                                                                            ''
+                                                                                                                                                exec 162>/export-to-post.lock
+                                                                                                                                                flock -x 162
+                                                                                                                                                NAME="$1"
+                                                                                                                                                cat > "/export-to-post/$NAME"
+                                                                                                                                            '' ;
+                                                                                                                                    }
+                                                                                                                            )
+                                                                                                                            (
+                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                    {
+                                                                                                                                        name = "script" ;
+                                                                                                                                        runtimeInputs =
+                                                                                                                                            [
+                                                                                                                                                ( identified.config.failure { } )
+                                                                                                                                                pkgs.coreutils
+                                                                                                                                                pkgs.findutils
+                                                                                                                                                pkgs.jq
+                                                                                                                                            ] ;
+                                                                                                                                        text =
+                                                                                                                                            ''
+                                                                                                                                                if [[ -d /memory ]]
+                                                                                                                                                then
+                                                                                                                                                    find /memory -mindepth 1 -maxdepth 1 -type d | while read -r DIRECTORY
+                                                                                                                                                    do
+                                                                                                                                                        BASENAME="$( basename "$DIRECTORY" )" || failure 9613707705785031
+                                                                                                                                                        ln --symbolic "$DIRECTORY/$BASENAME" "/mounts/$BASENAME"
+                                                                                                                                                    done
+                                                                                                                                                fi
+                                                                                                                                                mapfile -t ARGUMENTS < <(
+                                                                                                                                                    jq --raw-output '.arguments[]' /input.json
+                                                                                                                                                )
+                                                                                                                                                ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name }="$( jq --raw-output '.variables.VAR_${ builtins.hashString "sha512" name }' /input.json )" || failure 9367334832748350'' ) variables ) ) }
+                                                                                                                                                ${ builtins.concatStringsSep "\n" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''export ${ name }'' ) variables ) ) }
+                                                                                                                                                if jq --exit-status 'has("inputs") and (.inputs | has("standard"))' /input.json > /private/exit-status
+                                                                                                                                                then
+                                                                                                                                                    STANDARD_INPUT="$( jq --raw-output '.inputs.standard' /input.json )" || failure 7828132754944749
+                                                                                                                                                    if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" <<< "$STANDARD_INPUT" > /private/standard-output 2> /private/standard-error
+                                                                                                                                                    then
+                                                                                                                                                        STATUS="$?"
+                                                                                                                                                    else
+                                                                                                                                                        STATUS="$?"
+                                                                                                                                                    fi
+                                                                                                                                                else
+                                                                                                                                                    if application "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" > /private/standard-output 2> /private/standard-error
+                                                                                                                                                    then
+                                                                                                                                                        STATUS="$?"
+                                                                                                                                                    else
+                                                                                                                                                        STATUS="$?"
+                                                                                                                                                    fi
+                                                                                                                                                fi
+                                                                                                                                                jq \
+                                                                                                                                                    --null-input \
+                                                                                                                                                    --rawfile STANDARD_ERROR /private/standard-error \
+                                                                                                                                                    --rawfile STANDARD_OUTPUT /private/standard-output \
+                                                                                                                                                    --argjson STATUS "$STATUS" \
+                                                                                                                                                    '{
+                                                                                                                                                        "outputs" :
+                                                                                                                                                            {
+                                                                                                                                                                "standard-error" : $STANDARD_ERROR ,
+                                                                                                                                                                "standard-output" : $STANDARD_OUTPUT
+                                                                                                                                                            } ,
+                                                                                                                                                        "status" : $STATUS
+                                                                                                                                                    }' > /output.json
+                                                                                                                                            '' ;
+                                                                                                                                    }
+                                                                                                                            )
+                                                                                                                        ] ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                ] ;
+                                                                                            text =
+                                                                                                let
+                                                                                                    statements =
+                                                                                                        config.visitor
+                                                                                                            { }
+                                                                                                            {
+                                                                                                                string =
+                                                                                                                    path : value :
+                                                                                                                        ''
+                                                                                                                            nohup nice --adjustment 19 "${ value }" > /dev/null 2>&1 &
+                                                                                                                       '' ;
+                                                                                                            }
+                                                                                                            post ;
+                                                                                                    in
+                                                                                                        ''
+                                                                                                            INPUT_FILE="$( mktemp --suffix ".json" )" || failure 3433420567599724
+                                                                                                            export INPUT_FILE
+                                                                                                            OUTPUT_FILE="$( mktemp --suffix ".json" )" || failure 4306417545755399
+                                                                                                            export OUTPUT_FILE
+                                                                                                            EXPORT_TO_POST_LOCK="$( mktemp --suffix ".lock" )" || failure 8799907609982199
+                                                                                                            export EXPORT_TO_POST_LOCK
+                                                                                                            EXPORT_TO_POST_DIRECTORY="$( mktemp --directory )" || failure 0726069225095432
+                                                                                                            export EXPORT_TO_POST_DIRECTORY
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == true then [ ''mkdir --parents "${ source }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "bind" && is-directory == false then [ ''DIRECTORY="$( dirname ${ source } )" || failure 4036755818456657'' ''if [[ ! -d "$DIRECTORY" ]] ; then mkdir --parents "$DIRECTORY" ; fi'' ''touch ${ source }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp --dry-run )" || failure 8929529915872102 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''TEMPORARY_${ builtins.hashString "sha512" name }="$( mktemp ${ if is-directory then "--directory" else "" } )" || failure 2348666420719031 ${ type } ${ name }'' ''export TEMPORARY_${ builtins.hashString "sha512" name }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { source ? null , type , ... } : if type == "pipe" then [ ''pipe-consumer "${ "$" }TEMPORARY_${ builtins.hashString "sha512" name }" ${ builtins.toString source }'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            if [[ ! -e /dev/fd/0 ]] || [[ -t 0 ]]
+                                                                                                            then
+                                                                                                                PROCESS_ID="$PPID"
+                                                                                                                jq \
+                                                                                                                    --null-input \
+                                                                                                                    --argjson PROCESS_ID "$PROCESS_ID" \
+                                                                                                                    ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
+                                                                                                                    --args \
+                                                                                                                    '{
+                                                                                                                        "arguments" : $ARGS.positional ,
+                                                                                                                        "inputs" : { } ,
+                                                                                                                        "process-id" : $PROCESS_ID ,
+                                                                                                                        "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''VAR_${ builtins.hashString "sha512" name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
+                                                                                                                    }' -- "$@" > "$INPUT_FILE"
+                                                                                                            else
+                                                                                                                PROCESS_ID="$( ps -o ppid= -p "$PPID" )" || failure 3281243508943720
+                                                                                                                STANDARD_INPUT="$( cat )" || failure 6712938899436674
+                                                                                                                jq \
+                                                                                                                    --null-input \
+                                                                                                                    --argjson PROCESS_ID "$PROCESS_ID" \
+                                                                                                                    --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                                                                    ${ builtins.concatStringsSep "" ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--arg VAR_${ builtins.hashString "sha512" name } "${ value }"'' ) parameters.variables ) ) } \
+                                                                                                                    --args \
+                                                                                                                    '{
+                                                                                                                        "arguments" : $ARGS.positional ,
+                                                                                                                        "inputs" :
+                                                                                                                            {
+                                                                                                                                "standard" : $STANDARD_INPUT
+                                                                                                                            } ,
+                                                                                                                        "process-id" : $PROCESS_ID ,
+                                                                                                                        "variables" : { ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''${ name } : ${ "$" }VAR_${ builtins.hashString "sha512" name } ,'' ) parameters.variables ) ) } }
+                                                                                                                    }' -- "$@" > "$INPUT_FILE"
+                                                                                                            fi
+                                                                                                            user-environment
+                                                                                                            STANDARD_ERROR="$( jq --raw-output '.outputs.["standard-error"]' "$OUTPUT_FILE" )" || failure 8856851932761746
+                                                                                                            echo -n "$STANDARD_ERROR" >&2
+                                                                                                            STANDARD_OUTPUT="$( jq --raw-output '.outputs.["standard-output"]' "$OUTPUT_FILE" )" || failure 9396616715561937
+                                                                                                            echo -n "$STANDARD_OUTPUT"
+                                                                                                            STATUS="$( jq --raw-output '.["status"]' "$OUTPUT_FILE" )" || failure 9357282994784138
+                                                                                                            while IFS= read -r FILE
+                                                                                                            do
+                                                                                                                NAME="$( basename "$FILE" )" || failure 8543950787048380
+                                                                                                                VALUE_WITH_PERIOD="$( cat "$FILE"; printf '.' )"
+                                                                                                                VALUE="${ "$" }{VALUE_WITH_PERIOD%.}"
+                                                                                                                export "$NAME=$VALUE"
+                                                                                                            done < <(
+                                                                                                                find "$EXPORT_TO_POST_DIRECTORY" \
+                                                                                                                    -mindepth 1 \
+                                                                                                                    -maxdepth 1 \
+                                                                                                                    -type f
+                                                                                                            )
+                                                                                                            rm "$EXPORT_TO_POST_LOCK"
+                                                                                                            rm --recursive --force "$EXPORT_TO_POST_DIRECTORY"
+                                                                                                            ${ builtins.concatStringsSep "\n" statements }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "pipe" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs ( name : { is-directory ? true , source ? null , type , ... } : if type == "temporary" then [ ''rm --recursive --force "$TEMPORARY_${ builtins.hashString "sha512" name }"'' ] else [ ] ) mounts ) ) ) }
+                                                                                                            exit "$STATUS"
+                                                                                                        '' ;
+                                                                                        } ;
+                                                                    type = lib.types.functionTo lib.types.package ;
+                                                                } ;
+                                                    } ;
+                                            } ;
+                            in
+                                {
+                                    check =
+                                        {
+                                            failure ,
+                                            nixosTest ,
+                                            obviated-by ,
+                                            post-test ,
+                                            pre-test ,
+                                            trip ,
+                                            visitor
+                                        } :
+                                        {
+                                            mounts ,
+                                            name ,
+                                            post ,
+                                            runtime-inputs ,
+                                            text
+                                        } :
+                                        {
+                                            arguments ? [ ] ,
+                                            standard-error ? "" ,
+                                            standard-input ? null ,
+                                            standard-output ? "" ,
+                                            status ? 0
+                                        } :
+                                            let
+                                                test =
+                                                    nixosTest
+                                                        {
+                                                            name = "nixos-test" ;
+                                                            nodes.client =
+                                                                { config , pkgs , ... } @module :
+                                                                    let
+                                                                        identified =
+                                                                            if builtins.typeOf input == "lambda" then input module
+                                                                            else if builtins.typeOf input == "null" then module
+                                                                            else builtins.throw "0265309691168084" ;
+                                                                        in
+                                                                            with identified ;
+                                                                                {
+                                                                                    config =
+                                                                                        {
+                                                                                            environment.systemPackages =
+                                                                                                [
+                                                                                                    (
+                                                                                                        identified.pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "post-test" ;
+                                                                                                                runtimeInputs = [ ( config.failure {} ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        exec 123>/build/lock
+                                                                                                                        flock -x 123
+                                                                                                                        ${ if builtins.typeOf post-test == "null" then "" else post-test }
+                                                                                                                    '' ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "pre-test" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                text = pre-test ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                    (
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "test-script" ;
+                                                                                                                runtimeInputs =
+                                                                                                                    [
+                                                                                                                        pkgs.coreutils
+                                                                                                                        pkgs.diffutils
+                                                                                                                        pkgs.flock
+                                                                                                                        pkgs.which
+                                                                                                                        (
+                                                                                                                            config.lazy-shell-application
+                                                                                                                                {
+                                                                                                                                    mounts = mounts ;
+                                                                                                                                    name = name ;
+                                                                                                                                    post =
+                                                                                                                                        let
+                                                                                                                                            application =
+                                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "post" ;
+                                                                                                                                                        runtimeInputs = [ ( config.failure { } ) pkgs.coreutils pkgs.flock ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                exec 123>/build/lock
+                                                                                                                                                                flock -x 123
+                                                                                                                                                                ${ if builtins.typeOf post == "null" then "" else post }
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;
+                                                                                                                                            in [ "${ application }/bin/post" ] ;
+                                                                                                                                    runtime-inputs = runtime-inputs ;
+                                                                                                                                    text = text ;
+                                                                                                                                    variables = { } ;
+                                                                                                                                }
+                                                                                                                        )
+                                                                                                                    ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        mkdir --parents /build/expected
+                                                                                                                        ln --symbolic ${ builtins.toFile "standard-output" standard-output } /build/expected/standard-output
+                                                                                                                        ln --symbolic ${ builtins.toFile "standard-error" standard-error } /build/expected/standard-error
+                                                                                                                        echo ${ builtins.toString status } > /build/expected/status
+                                                                                                                        mkdir --parents /build/observed
+                                                                                                                        # shellcheck disable=SC2065
+                                                                                                                        if ${ name } ${ builtins.concatStringsSep " " arguments } ${ if builtins.typeOf standard-input == "null" then "" else "< ${ builtins.toFile "standard-input" standard-input }" } > /build/observed/standard-output 2> /build/observed/standard-error
+                                                                                                                        then
+                                                                                                                            # shellcheck disable=SC2319
+                                                                                                                            STATUS="$?"
+                                                                                                                        else
+                                                                                                                            # shellcheck disable=SC2319
+                                                                                                                            STATUS="$?"
+                                                                                                                        fi
+                                                                                                                        echo "$STATUS" > /build/observed/status
+                                                                                                                        diff --recursive --unified /build/expected /build/observed
+                                                                                                                    '' ;
+                                                                                                            }
+                                                                                                    )
+                                                                                                ] ;
+                                                                                        } ;
+                                                                                    imports = [ failure implementation trip visitor ] ;
+                                                                                } ;
+                                                            testScript =
+                                                                ''
+                                                                    client.wait_for_unit("multi-user.target")
+                                                                    client.succeed("pre-test")
+                                                                    client.succeed("test-script")
+                                                                    client.succeed("post-test")
+                                                                '' ;
+                                                        } ;
+                                                in
+                                                    {
+                                                        obviated-by = obviated-by ;
+                                                        test = test ;
+                                                        type = "lazy-shell-application" ;
+                                                    } ;
+                                    implementation =
+                                        if builtins.typeOf output == "lambda" then output implementation
+                                        else if builtins.typeOf output == "null" then implementation
+                                        else builtins.throw "5765750574226176" ;
+                                } ;
+            } ;
+}
